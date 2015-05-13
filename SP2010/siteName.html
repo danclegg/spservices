@@ -1,0 +1,55 @@
+<html>
+    <head>
+        <script type="text/javascript" src="/SiteAssets/scripts/jquery-1.5.2.min.js"></script>
+		<script type="text/javascript" src="/SiteAssets/scripts/jquery.SPServices-0.6.1.min.js"></script>
+		<script>
+            var siteUrl = "";
+
+            function loadSiteUrl() {
+                siteUrl = $().SPServices.SPGetCurrentSite();
+            
+                $().SPServices({
+                    operation: "GetWeb",
+                    completefunc: function (xData, Status) {
+                        $(xData.responseXML).find("Web").each(function() {
+                            var thisTitle = $(this).attr("Title");
+                            var titleHtml = '<center><h1>'+ thisTitle + '</h1></center>';
+                            $('div.title').html(titleHtml);
+                        });
+                    }
+                });
+
+				// $().SPServices({
+				// 	operation: "GetListItems",
+				// 	webURL: siteUrl,
+				// 	async: false,
+				// 	listName: "Details",
+				// 	CAMLViewFields: "<ViewFields><FieldRef Name='Title' /><FieldRef Name='Value' /></ViewFields>",
+				// 	completefunc: function (xData, Status) {
+				// 		//alert(xData.responseXML.xml);
+				// 		$(xData.responseXML).find("[nodeName=z:row]").each(function() {
+				// 			var title = $(this).attr("ows_Title");
+				// 			var val = $(this).attr("ows_Value");
+				// 			if (title="WO"){
+				// 				$("#title").append("<br />");
+				// 				$("#title").append("<center><h3>"+val+"</h3></center>");								
+				// 		});
+				// 	}
+				// });
+            }
+
+
+            function waitLoadSiteUrl() {
+                setTimeout("loadSiteUrl()", 1000);
+            }
+        </script>
+        <script type="text/javascript">
+            _spBodyOnLoadFunctionNames.push("waitLoadSiteUrl");
+        </script>
+    
+	</head>
+    <body>
+		<div class="title"></div>
+	</body>
+</html>
+​​​​

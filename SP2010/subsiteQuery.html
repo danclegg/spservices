@@ -1,0 +1,25 @@
+<html>
+	<head>
+		<script type="text/javascript" src="http://site/sites/subsite/SiteAssets/scripts/jquery-1.4.2.js"></script>
+		<script type="text/javascript" src="http://site/sites/subsite/SiteAssets/scripts/jquery.SPServices-0.5.6.min.js"></script>
+		<script>
+			$(document).ready(function() {
+				$("#sitesUL").html("");
+				$().SPServices({
+					operation: "GetWebCollection",
+					completefunc: function (xData, Status) {
+						$(xData.responseXML).find("Web").each(function() {
+							var thisTitle = $(this).attr("Title");
+							var thisUrl = $(this).attr("Url");
+							var liHtml = '<li><a href="'+ thisUrl + '">' + thisTitle + '</a>';
+							$("#sitesUL").append(liHtml);
+						});
+					}
+				});
+			});
+		</script>
+	</head>
+	<body onload="onLoad();">
+		<div id="ulDiv"><ul id="sitesUL" /></div>
+	</body>
+</html>

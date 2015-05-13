@@ -1,0 +1,44 @@
+<html>
+<head>
+<script type="vbscript">
+
+Sub OITBillingRequest()
+	Dim SOAPRes, SOAPMessage
+	document.write("something")
+	Const SoapServer = "https://soaregistry.byu.edu:443/services/OIT/OITBilling"
+		
+	SOAPMessage  = "<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:wsdl=""http://www.informatica.com/wsdl/"">" &_
+	"<soapenv:Header/><soapenv:Body><wsdl:OITBillingRequest><wsdl:OITBillingRequestElement>" &_
+	"<Operation>GetResourceTimes</Operation><GetResourceTimesRequest>" &_
+	"<ApplicationServiceTicket>?</ApplicationServiceTicket>" &_
+	"<wo_number>%533%</wo_number>" &_
+	"</GetResourceTimesRequest></wsdl:OITBillingRequestElement></wsdl:OITBillingRequest></soapenv:Body></soapenv:Envelope>"
+	
+	Set xmlhttp = CreateObject("MSXML2.ServerXMLHTTP") 
+	                                
+	xmlhttp.open "POST", SoapServer, False
+	xmlhttp.setRequestHeader "Man", POST & " " & SoapServer & " HTTP/1.1"
+	xmlhttp.setRequestHeader "MessageType", "CALL"
+	xmlhttp.setRequestHeader "Content-Type", "text/xml"
+	xmlhttp.send(SoapMessage)
+	
+	'////For Testing
+	WScript.Echo xmlhttp.status
+	WScript.Echo xmlhttp.statusText
+	WScript.Echo xmlhttp.responseText
+	
+	SOAPRes = xmlhttp.responseText
+	document.write(SOAPRes)
+	
+End Sub
+</script>
+<!--<script type="text/javascript">
+ // _spBodyOnLoadFunctionNames.push("OITBillingRequest");
+  </script> -->
+ </head> 
+<body language="vbscript">
+<%
+	OITBillingRequest()
+%>
+</body>
+</html>

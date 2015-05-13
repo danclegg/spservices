@@ -1,0 +1,109 @@
+<html>
+  <head>
+    <script type="text/javascript" src="http://site/SiteAssets/scripts/jquery-1.5.2.min.js"></script>
+	<script type="text/javascript" src="http://site/SiteAssets/scripts/jquery.SPServices-0.6.1.min.js"></script>
+	<script type="text/javascript" src="http://site/SiteAssets/scripts/jquery.url.js"></script>
+	<script type="text/javascript" src="http://site/SiteAssets/scripts/date.js"></script>   
+    <script type="text/javascript">
+		
+			// Get all the subsites of the current site
+			function getTableSites() {
+				//alert('gettingSites');
+				$("#toSiteSelect").html("");
+				//alert('got here');
+				$().SPServices({
+					operation: "GetWebCollection",
+					completefunc: function (xData, Status) {
+						$(xData.responseXML).find("Web").each(function() {
+							var thisTitle = $(this).attr("Title");
+							var thisUrl = $(this).attr("Url");
+							$('#siteSelect').append('<option value="'+thisUrl+'">'+thisTitle+'</option>');
+						}); 
+					} 
+				});
+			}
+			
+			function getTableRequests(weburl){
+				var requests = new Array();
+				$().SPServices({    
+					operation: "GetListItems",
+					webURL: weburl,
+					async: false,
+					listName: "Requests",
+					CAMLViewFields: "<ViewFields><FieldRef Name='Title' /><FieldRef Name='Description' /></ViewFields>",
+					completefunc: function (xData, Status) {
+						var i=0;
+						$(xData.responseXML).find("[nodeName='z:row']").each(function() {
+							var title=$(this).attr("ows_Title");
+							var desc=$(this).attr("ows_Description");
+							//var status=$(this).attr("ows_Status");
+							//var start=$(this).attr("ows_Start_x0020_Date");
+							//var end=$(this).attr("ows_End_x0020_Date");
+							//var approved=$(this).attr("ows_Approved");
+							//requests[i]=(title,desc,status,start,end,approved);
+							requests[i]=new Array();
+							requests[i][0]=(title);
+							requests[i][1]=(desc);
+							//requests[i][2]=(start);
+							//requests[i][3]=(end);
+							i++;
+						});
+					}
+			  	});
+				return requests;
+			}			
+			/*
+			function copy() {
+				//alert('got to copy');
+				var to = $('#siteSelect').val();
+				//alert(from);
+				//alert(to);
+				
+				//var fromListID = getListID("Requests",from);
+				//var toListID = getListID("Requests",to);
+				var requests = getRequests(from);
+				//alert(requests);
+			  	
+				var len = requests.length;
+				//alert(len);
+				for (var i=0; i<len; i++) {
+					$().SPServices({
+						operation: "UpdateListItems",
+						async: false,
+						batchCmd: "New",
+						webURL: to,
+						listName: "Requests",
+						valuepairs: [["Title", requests[i][0]],["Description", requests[i][1]]],
+						completefunc: function(xData, Status) {
+						  alert("completed");
+						}
+					});
+				}
+			} */
+
+			function updateTable() {
+				var url=$('#siteSelect').val();
+				var requests=getRequests(url);
+				var len = requests.length;
+				for (var i=0;i<len;i++) {
+					var trhtml = "<tr><td>"+requests[i][0]+"</td><td></td><td></td><td></td></tr>";
+					$("#data").append(trhtml);
+				}
+			}
+
+			function loadToSelect() {
+				alert('starting');
+				getTableSites();
+				
+			}
+    </script>
+  <script type="text/javascript">
+  	_spBodyOnLoadFunctionNames.push("loadToSelect");
+  </script>
+  </head>
+  <body onload="loadToSelect();">
+  Copy requests<br />
+     <div><select id="siteSelect" onchange="updateTable()"></select><br />
+     <table id="data"><th>title</th><th>start date</th><th>end date</th><th>type</th></table></div>
+  </body>
+</html>

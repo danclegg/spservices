@@ -1,0 +1,141 @@
+<html>
+  <head>
+    <script>
+function includeJS(jsFile) {
+document.write('<script type="text/javascript" src=' + jsFile + '></script>');
+}
+
+function init(){
+includeJS("http://static.simile.mit.edu/timeline/api-2.3.0/timeline-api.js?bundle=true");
+includeJS("scripts/date.js");
+Timeline_urlPrefix = "http://static.simile.mit.edu/timeline/api-2.3.0";
+var tl;
+var eventSource = new Timeline.DefaultEventSource();
+var event_data;
+}
+
+function openXMLfile(url)
+{
+	var xmlDoc;
+	if (document.implementation && document.implementation.createDocument)
+	{
+		try {
+				//netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
+				var xmlhttp = new window.XMLHttpRequest();
+				xmlhttp.open("GET",url,false);
+				xmlhttp.send(null);
+				xmlDoc = xmlhttp.responseXML.documentElement;
+			}
+		catch (e) {
+			alert("xmlhttp error: " + e);
+			//alert("Permission UniversalBrowserRead denied.");
+			}
+		return(xmlDoc);
+	}
+	else if (window.ActiveXObject)
+	{
+		xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+		xmlDoc.async="false";
+		xmlDoc.load(url);
+		return(xmlDoc);
+ 	}
+	else
+	{
+		alert('Your browser can\'t handle this script');
+		return;
+	}
+	
+}
+
+function takeEventOut(url)
+{
+	var rows;
+	xmlDoc = openXMLfile(url);
+	
+	if (document.implementation && document.implementation.createDocument)
+	{
+//		try {
+//				//netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
+//				alert("got here");
+//				var xmlhttp = new window.XMLHttpRequest();
+//				xmlhttp.open("GET",url,false);
+//				xmlhttp.send(null);
+//				xmlDoc = xmlhttp.responseXML;
+//			}
+//		catch (e) {
+//			alert("xmlhttp error: " + e);
+//			//alert("Permission UniversalBrowserRead denied.");
+//			}
+		rows = xmlDoc.getElementsByTagName("row");
+	}		
+	else if (window.ActiveXObject)
+	{
+		rows = xmlDoc.getElementsByTagName("z:row");
+	}
+	else
+	{
+		alert('Your browser can\'t handle this script');
+		return;
+	}
+	event_data = { "events":[]};
+	for (j=0;j<rows.length;j++)
+	{
+		// taking the event info from the xml
+		var dateEvent = Date.parseExact(rows.item(j).getAttribute('ows_Start_x0020_Date'), "yyyy-M-dd hh:mm:ss");
+		var endEvent = Date.parseExact(rows.item(j).getAttribute('ows_End_x0020_Date'), "yyyy-M-dd hh:mm:ss");
+		var title = rows.item(j).getAttribute('ows_LinkTitle');
+		var icon = "http://www.brandspankingnew.net/img/feed-icon-12x12.gif";
+		// chossing color for the event
+		var color = "blue";
+		
+		event_data.events[j] = {"start": dateEvent, "end": endEvent, "instant": false, "title": title, "textColor": "#000000", "description": title};
+	}
+}
+
+function onLoad()
+{	
+	takeEventOut("http://site/sites/subsite/newservice/_vti_bin/owssvr.dll?XMLDATA=1&List=2C5B2D0E-7E54-47CC-B535-C54164EE58A5&query=Title");
+	//create the timeline
+		var bandInfos = [
+		Timeline.createBandInfo({
+		eventSource: eventSource,
+		date: "Aug 06 2010 00:00:00 GMT",
+         width:          "70%",  
+         intervalUnit:   Timeline.DateTime.MONTH,  
+         intervalPixels: 100 
+     }), 
+     Timeline.createBandInfo({
+		eventSource: eventSource,
+		date: "Aug 06 2010 00:00:00 GMT",
+		 overview: true,
+         width:          "30%",  
+         intervalUnit:   Timeline.DateTime.YEAR,  
+         intervalPixels: 200 
+     }) 
+	];
+	 bandInfos[1].syncWith = 0;
+  	bandInfos[1].highlight = true;
+  	tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
+	eventSource.loadJSON(event_data, document.location.href);
+}
+
+var resizeTimerID = null;
+function onResize() {
+    if (resizeTimerID == null) {
+        resizeTimerID = window.setTimeout(function() {
+            resizeTimerID = null;
+            tl.layout();
+        }, 500);
+    }
+}
+
+    </script>
+  <script type="text/javascript">
+  _spBodyOnLoadFunctionNames.push("onLoad");
+  _spBodyOnLoadFunctionNames.push("init");
+  </script>
+  </head>
+  <body onload="onLoad();" onresize="onResize();">
+     <div id="my-timeline" style="height: 500px; border: 1px solid #aaa"></div>
+  </body>
+</html>

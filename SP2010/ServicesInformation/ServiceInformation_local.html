@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<script type="text/javascript" src="http://site/sites/subsite/SiteAssets/scripts/jquery-1.4.2.js"></script>
+		<script type="text/javascript" src="http://site/sites/subsite/SiteAssets/scripts/jquery.SPServices-0.5.6.min.js"></script>
+		<script>
+
+			function getServiceInformation()
+			{
+				$().SPServices({
+				operation: "GetListItems",
+				async: false,
+				listName: "Service Information",
+				CAMLViewFields: "<ViewFields><FieldRef Name='Service Name' /><FieldRef Name='Business Analyst' /><FieldRef Name='Lead Engineer' /><FieldRef Name='Work Order' /></ViewFields>",
+				completefunc: function (xData, Status) {
+						$(xData.responseXML).find("[nodeName=z:row]").each(function() {
+							var liHtml = "<li>" + $(this).attr("ows_Service_x0020_Name") + "</li>";
+							alert(liHtml);
+							$("#servInfoUL").append(liHtml);
+						});
+					}
+				});
+			}
+			
+			function waitLoad() {
+				setTimeout("getServiceInformation()", 2000);
+			}
+		</script>
+		<script type="text\javascript">
+			_spBodyOnLoadFunctionNames.push("waitLoad");
+		</script>
+		
+	</head>
+	<body>
+		<ul id="servInfoUL" />
+	<body>
+</html>

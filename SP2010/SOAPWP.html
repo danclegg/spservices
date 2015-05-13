@@ -1,0 +1,53 @@
+<html>
+<head>
+	<script type="text/javascript" language="javascript">
+		var xmlhttp;
+		function on_click() 
+		{
+			var xmlToSend = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdl="http://www.informatica.com/wsdl/">'
+			+ '<soapenv:Header/><soapenv:Body><wsdl:OITBillingRequest><wsdl:OITBillingRequestElement>'
+			+ '<Operation>GetResourceTimes</Operation>'
+			+ '<SubmitOrderRequest><GetResourceTimesRequest>'
+			+ '<ApplicationServiceTicket>?</ApplicationServiceTicket>'
+			+ '<wo_number>%533%</wo_number>'
+			+ '</GetResourceTimesRequest></wsdl:OITBillingRequestElement></wsdl:OITBillingRequest></soapenv:Body></soapenv:Envelope>';
+
+			var xmldoc = new ActiveXObject("Microsoft.XMLDOM");
+			xmldoc.loadXML(xmlToSend);
+
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			xmlhttp.onreadystatechange = state_Change;
+			xmlhttp.open("POST", "https://soaregistry.byu.edu:443/service/OIT/OITBilling", false);
+			xmlhttp.setRequestHeader ("SOAPAction", "http://www.informatica.com/wsdl/");
+			xmlhttp.setRequestHeader ("Content-Type", "text/xml");
+			xmlhttp.send(xmldoc);
+
+			var objResponse = document.getElementById("responseDiv");
+
+			objResponse.innerText = xmlhttp.responseXML.xml;
+			
+		}
+
+		function state_Change() {
+			// if xmlhttp shows "loaded"
+			if (xmlhttp.readyState==4) {
+				// if "OK"
+				if (xmlhttp.status==200) {
+					alert("OK");
+				}
+				else {
+					alert("Problem retrieving XML data");
+				}
+			}
+		}
+	</script>
+</head>
+<body>
+<div>
+	<h1>Click the button to call the web service</h1>
+	<input type="button" onclick="return on_click();" value="OK"/>
+</div>
+<div id="responseDiv">
+</div>
+</body>
+</html>

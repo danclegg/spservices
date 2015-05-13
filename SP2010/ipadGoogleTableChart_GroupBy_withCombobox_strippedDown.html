@@ -1,0 +1,249 @@
+<script src="/SiteAssets/scripts/jquery-1.4.2.js" type="text/javascript"></script>
+<script src="/SiteAssets/scripts/jquery.SPServices-0.6.1.min.js" type="text/javascript"></script>
+<script src="/SiteAssets/scripts/date.js" type="text/javascript"></script>
+<script src="/SiteAssets/scripts/BrowserDetect.js" type="text/javascript"></script>
+<script src="/SiteAssets/scripts/jquery.simpleCombo.js" type="text/javascript"></script>
+<script src="https://js-naturalsort.googlecode.com/svn/trunk/naturalSort.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script type="text/javascript">
+var sum=0;
+	var d;
+	function back(data) {
+		d=data;
+
+		var results = $(d);
+
+		var j=0;
+		time_data = { "times":[]};
+		people = { "person": []};
+		$(results).find('ResourceTime').each(function(j){
+			var netid=$(this).find('resource_id').text();
+			netid = netid.toLowerCase();
+			var hours=$(this).find('hours').text();
+			var submitted=$(this).find('date').text();
+			var group=$(this).find('group_desc').text();
+			$('#timestable').append('<tr class="time"><td class="netid">' + netid + '</td><td class="hours">' + hours + '</td><td>' + submitted + '</td><td class="group">'+ group +'</td></tr>');
+			
+			time_data.times[j] = {"netid": netid, "hours": hours, "submitted": submitted, "group": group};
+			sum += Number(hours);
+			j++;
+		});		
+	}
+
+function getParameterByName( name )
+{
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+  if( results == null )
+    return "";
+  else
+    return decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+$(document).ready(function() {
+$('#wodata').html("");
+$('#Loading').show();
+		var s=getParameterByName('selected');
+		var scope;
+		//alert(s);
+ 		$('#form').html('<form id="formHtml"><br />WO:<select id="WOSelect" />   Scope: <a href="#" class="scope" id="individual">Individual</a>|<a href="#" class="scope" id="org">Organization</a>|<a href="#" class="scope" id="task">Task</a>');
+ 		var len = s.length;
+ 		$('a.scope').click(function(){
+/*
+ 			scope=$(this).attr('id');
+ 			document.location = "?selected="+s+"&scope="+scope;
+*/
+ 		}); 		
+$('#wodata').append('<h3>Hours log:</h3><br /><table id=\"timestable\"><th>netid</th><th>hours</th><th>submitted</th></table>');
+
+$('#timestable').find("tr:gt(0)").remove();
+		var pWOs = new Array();
+ 		$().SPServices({
+ 			operation: "GetListItems",
+ 			webURL: "/",
+ 			async: false,
+ 			listName: "WODetail",
+ 			CAMLViewFields: "<ViewFields><FieldRef Name='Title' /></ViewFields>",
+ 			completefunc: function (xData, Status) {
+ 				$('#WOSelect').append('<option>---Projects---</option>');
+ 				$(xData.responseXML).find("[nodeName=z:row]").each(function() {
+ 					var WO = $(this).attr("ows_Title");
+ 					pWOs.push(WO);
+ 				});
+ 				pWOs.sort(naturalSort);
+ 				var pwCount;
+ 				for (pwCount=0;pwCount<pWOs.length;pwCount++){
+ 					$('#WOSelect').append('<option value="'+pWOs[pwCount]+'">'+pWOs[pwCount]+'</option>');
+ 				}
+ 			}
+ 		});
+ 		var sWOs = new Array();
+ 		$().SPServices({
+ 			operation: "GetListItems",
+ 			webURL: "/",
+ 			async: false,
+ 			listName: "ProductWOs",
+ 			CAMLViewFields: "<ViewFields><FieldRef Name='Title' /><FieldRef Name='Service_x0020_Name' /></ViewFields>",
+ 			completefunc: function (xData, Status) {
+ 				$('#WOSelect').append('<option>---Services---</option>');
+ 				$(xData.responseXML).find("[nodeName=z:row]").each(function() {
+ 					var WO = $(this).attr("ows_Title");
+ 					var name = $(this).attr("ows_Service_x0020_Name");
+ 					sWOs.push(WO);
+ 				});
+ 				sWOs.sort(naturalSort);
+ 				var swCount;
+ 				for (swCount=0;swCount<sWOs.length;swCount++){
+ 					$('#WOSelect').append('<option value="'+sWOs[swCount]+'">'+sWOs[swCount]+'</option>');
+ 				}
+ 			}
+ 		});
+
+ 		if(len>0) {
+			$("select").prepend('<option id="canned" value="'+s+'">'+s+'</option>');
+			$('select option[id="canned"]').attr("selected","selected");
+ 		}
+
+		 		
+		$('#WOSelect').simpleCombo();
+
+		var v = $('#WOSelect').val();
+		if (v.length>2){
+ 		var url = "http://someProxy/"+ v +"-1?callback=back";
+ 		scriptNode = document.createElement('script');
+ 		scriptNode.src = url;
+ 		scriptNode.type = 'text/javascript';
+ 		document.body.appendChild(scriptNode);
+ 		}
+
+		$('#WOSelect').change(function(){
+			var selval = $('#WOSelect').val();
+			var dash = selval.search('-');
+ 			if ((selval != null)&&(dash>0)&&(selval.length>(dash+1))){
+ 				setTimeout(function(){
+ 					var scopeSet = getParameterByName('scope');
+ 					if (scopeSet.length>0){
+ 						document.location = "?selected="+selval+"&scope="+scopeSet;
+ 					}
+ 					else {
+ 						document.location = "?selected="+selval+"&scope=individual";
+ 					}
+ 				},500);
+ 			}
+ 		});
+
+ 		
+ });
+</script>
+<script type="text/javascript">
+        // Load the Visualization API and the piechart package.
+  google.load('visualization', '1', {'packages':['corechart', 'table']});
+
+  // Set a callback to run when the Google Visualization API is loaded.
+  google.setOnLoadCallback(drawPieChartAndTable);
+  
+       function drawPieChartAndTable() {
+       $('#Loading').hide();
+	       $('#table_div').html("");
+	       $('#table_div').append('<h3>Hours log:</h3><br />');
+	       var data = new google.visualization.DataTable();
+	       data.addColumn('string', 'Group');
+	       data.addColumn('string', 'Net ID');
+	       data.addColumn('number', 'Hours');
+	       data.addColumn('date', 'Work Date');
+	       var count = $('#timestable tr').length;
+	       data.addRows(count-1);
+	       
+       
+	       var i=0;
+	       $.each(time_data.times,function(){
+	       	   var g = String(this.group);
+		       var net = String(this.netid);
+		       var h = String(this.hours);
+		       var submitted = String(this.submitted);
+		       var year = submitted.substr(0,4);
+		       var month = submitted.substr(5,2);
+		       var day = submitted.substr(8,2);
+		       data.setCell(i,0,g);
+		       data.setCell(i,1,net);
+		       data.setCell(i,2,Number(h));
+		       data.setCell(i,3,new Date(year,month,day));
+		       i++;
+	       });
+	    var groups = data.getDistinctValues(0);
+	    var numgroups = groups.length;
+	    function posOnly(values){
+	    	var sum = google.visualization.data.sum(values);
+	    	if (sum<0){
+	    		sum=0;
+	    	}
+	    	return sum;
+	    }
+	    for (var n=0;n<numgroups;n++){
+	    	$('#drillcontainer').append('<div id="'+groups[n]+'" class="drill" style="width:500px; float:right; position:relative;"></div>');
+			var drillView = new google.visualization.DataView(data);
+			drillView.setRows(drillView.getFilteredRows([{column: 0, value: groups[n]}]));
+			var divName = groups[n];
+			var drillTable = new google.visualization.Table(document.getElementById(divName));
+			drillTable.draw(drillView, {showRowNumber: false, alternatingRowStyle: true, page: 'enable', pageSize: 30, sort: 'enable', sortAscending: false, sortColumn: 3, startPage: 0, width: '300px'});
+			$('div[id='+divName+']').hide();
+	    }
+	       
+        var numformat = new google.visualization.NumberFormat({fractionDigits: 2});
+        var gTable = google.visualization.data.group(data,[0],[{'column': 2, 'aggregation': google.visualization.data.sum, 'type': 'number'}]);
+        numformat.format(gTable,1);
+		var table = new google.visualization.Table(document.getElementById('table_div'));
+        table.draw(gTable, {showRowNumber: false});
+
+        $('#wodata').hide();
+      
+        var charts = new google.visualization.PieChart(document.getElementById('chart_div'));
+		var chart = google.visualization.data.group(data,[1],[{'column': 2, 'aggregation': posOnly, 'type': 'number'}]);
+ 
+        numformat.format(chart,1);
+        charts.draw(chart, {width: 675, height: 450, is3D: true, title: 'Hours logged on work order (by netid)'}); 	         
+
+		var tottab = new google.visualization.Table(document.getElementById('totalsTable'));
+		var tot = google.visualization.data.group(data,[1],[{'column': 2, 'aggregation': google.visualization.data.sum, 'type': 'number'}]);
+		numformat.format(tot,1);
+		tottab.draw(tot, {showRowNumber: false, alternatingRowStyle: true, page: 'enable', pageSize: 30, sort: 'enable', sortAscending: false, sortColumn: 0, startPage: 0, width: '300px'});
+		
+
+		
+       $('#HoursTotal').html("<h3>Total Hours Logged: "+sum.toFixed(2));
+
+	   google.visualization.events.addListener(table, 'select', gTableSelectHandler);
+
+  function gTableSelectHandler() {
+    var selection = table.getSelection();
+    var str = '';
+    for (var i = 0; i < selection.length; i++) {
+      var item = selection[i];
+      if (item.row != null) {
+        str = gTable.getFormattedValue(item.row, 0);
+      }
+    }
+    $('.drill').hide();
+    $('div[id="'+str+'"]').toggle();
+    
+  }
+
+}
+</script>
+
+<div id="form"></div>
+<div id="Loading"><h1>Loading...</h1></div>
+<div id="HoursTotal" style="position: relative"></div>
+<div id="container" style="width: 1100px; height: 450px;">
+	<div id="chart_div" class="left" style="width:700px;float:left; position:relative;"></div>
+	<div id="innercontainer" style="float:right; width:350px; position:relative">
+		<div id="totalsTable" class="right" style="width:350px; float:right; position:relative;"></div>
+	</div>
+</div>
+<div id="drillcontainer" style="width:905px;">
+	<div id="table_div" class="left" style="width:400px; float:left; position:relative;"></div>
+</div>
+<div id="wodata"></div>

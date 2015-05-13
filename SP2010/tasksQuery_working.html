@@ -1,0 +1,88 @@
+<style>
+TD .red {
+	COLOR: red
+}
+TD {
+	COLOR: black
+}
+</style>
+<script src="/sites/subsite/SiteAssets/scripts/latestJquery.js" type="text/javascript">
+</script><script src="/sites/subsite/SiteAssets/scripts/spservices.js" type="text/javascript">
+</script><script src="/sites/subsite/SiteAssets/scripts/date.js" type="text/javascript"></script>
+<script>
+	$(document).ready(function(){
+		$("#tasksTable").html("");
+		$("#tasksTable").append("<th>Service/Project</th><th>Task</th><th>Status</th>");
+		$("#wait").show();
+		var otherUN;
+		var name = $().SPServices.SPGetCurrentUser({
+			fieldName: "Name",
+			debug: true
+		});
+		nameArray = name.split("\\");
+		if (nameArray[0] = "BYU") { otherUN = "EXCH" + "\\" + nameArray[1]}
+
+		var i;
+		var sitesArray = new Array();
+		var titlesArray = new Array();
+		//var dueArray = new Array();
+		$().SPServices({
+			operation: "GetAllSubWebCollection",
+			completefunc: function (xData, Status) {
+				//alert(xData.responseXML.xml);
+				i=0;
+				$(xData.responseXML).find("Web").each(function() {
+					var thisTitle = $(this).attr("Title");
+					var thisUrl = $(this).attr("Url");
+					sitesArray[i] = thisUrl;
+					titlesArray[i] = thisTitle;
+					i++;
+				});
+				for (i=0;i<sitesArray.length;i++) {
+					var site = titlesArray[i];
+					$().SPServices({
+						operation: "GetListItems",
+						webURL: sitesArray[i],
+						async: false,
+						listName: "Tasks",
+						CAMLViewFields: "<ViewFields><FieldRef Name='Title' /><FieldRef Name='AssignedTo' /><FieldRef Name='ID' /><FieldRef Name='Status' /></ViewFields>",
+						completefunc: function (xData, Status) {
+							//alert(xData.responseXML.xml);
+							$(xData.responseXML).find("[nodeName=z:row]").each(function() {
+								var task = $(this).attr("ows_Title");
+								var who = $(this).attr("ows_AssignedTo");
+								var url = sitesArray[i] + "/Lists/Tasks/DispForm.aspx?ID=" + $(this).attr("ows_ID");
+								var status = $(this).attr("ows_Status");
+								//dueArray = $(this).attr("ows_DueDate").split(" ");
+								//var due = dueArray[0];
+								//var standDate = Date.parse(due);
+								if (who.toLowerCase().indexOf(nameArray[1]) >= 0) {
+									if (status != "Completed"){
+										//$("#tasksUL").append("<li><b>" + site + "</b> - <a href=\"javascript:popupTask('" + url + "')\">" + task + "</a></li>");
+										//if (standDate < Date.today()) {
+											$("#tasksTable").append("<tr><td>" + site + "</td><td><a href=\"javascript:popupTask('" + url + "')\">" + task + "</a></td><td>" + status + "</td></span></tr>");								
+									/*	}
+										else {
+											$("#tasksTable").append("<tr><td>" + site + "</td><td><a href=\"javascript:popupTask('" + url + "')\">" + task + "</a></td><td>" + status + "</td><td>" + due + "</td></span></tr>");								
+										}*/
+									}
+								}
+							});
+						}
+					});
+					var next = i+1;
+					if (next = sitesArray.length) {
+						$("#wait").hide();
+					}
+				}
+			}
+		});
+	});
+</script>
+<script>
+function popupTask(url){
+		window.open(url,"_blank","fullscreen=no,height=800,width=800,toolbar=no,resizable=yes,menubar=no,left=10,top=10",false);
+}
+</script>
+<div id="wait"><h3><i>Loading your tasks...</i></h3></div>
+<div id="table"><table id="tasksTable"></table></div>

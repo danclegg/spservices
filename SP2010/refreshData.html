@@ -1,0 +1,120 @@
+<html>
+  <head>
+    <script type="text/javascript" src="http://site/sites/subsite/SiteAssets/scripts/latestJquery.js"></script>
+	<script src="http://site/sites/subsite/SiteAssets/scripts/jquery.SPServices-0.5.7.min.js" type="text/javascript"></script>
+    <script>
+		var thisSite = $().SPServices.SPGetCurrentSite();
+		var listURL = thisSite + "/Lists/Requests/";
+		var itemURLS = new Array();
+		var workflowIDs = new Array();
+
+		var x;
+		var y;
+		
+		function delItem(roadmap,item)
+		{
+			$().SPServices({
+				operation: "UpdateListItems",
+				async: false,
+				listName: roadmap,
+				updates: "<Batch OnError='Continue' PreCalc='TRUE' ListVersion='0'>" +
+						"<Method ID='1' Cmd='Delete'>" +
+						"<Field Name='ID'>" + item + "</Field>" +
+						"</Method></Batch>",
+				completefunc: function(xData, Status) {
+				}
+				});
+		}
+		
+		function delRoadmapElements(roadmap)
+		{
+			$().SPServices({
+			operation: "GetListItems",
+			listName: roadmap,
+			async: false,
+			CAMLViewFields: "<ViewFields><FieldRef Name='RequestID' /><FieldRef Name='ID' /></ViewFields>",
+			completefunc: function (xData, Status) {
+				$(xData.responseXML).find("[nodeName=z:row]").each(function(){
+					var roadmapElem = $(this).attr("ows_ID");
+					//alert(roadmapElem);
+					$().SPServices({
+						operation: "UpdateListItems",
+						async: false,
+						listName: roadmap,
+						updates: "<Batch OnError='Continue' PreCalc='TRUE' ListVersion='0'>" +
+								"<Method ID='1' Cmd='Delete'>" +
+								"<Field Name='ID'>" + roadmapElem + "</Field>" +
+								"</Method></Batch>",
+						completefunc: function(xData, Status) {
+						}
+					});
+				});
+			}
+			});
+		}
+		
+		function StartWorkflow(ItemURL, templateID) {
+			$().SPServices({
+				operation: "StartWorkflow",
+				item: ItemURL,
+				templateId: templateID,
+				workflowParameters: "<root />",
+				completefunc: function() {
+					
+				}
+			});
+		}
+	
+		$(document).ready(function() {
+			y=0;
+			$().SPServices({
+				operation: "GetTemplatesForItem",
+				async: false,
+				item: listURL,
+				completefunc: function (xData, Status) {
+					$(xData.responseXML).find("WorkflowTemplate").each(function() {
+						var name  = $(this).attr("Name");
+						var templateID;
+						$(this).find("WorkflowTemplateIdSet").each(function() {templateID = $(this).attr("TemplateId");});
+						workflowIDs[y]=templateID;
+						//alert(workflowIDs[y]);
+						y++;
+					});
+				}
+			});
+			
+			x=0;
+			$().SPServices({
+				operation: "GetListItems",
+				async: false,
+				listName: "Requests",
+				CAMLViewFields: "<ViewFields><FieldRef Name='ID' /></ViewFields>",
+				completefunc: function (xData, Status) {
+				  $(xData.responseXML).find("[nodeName=z:row]").each(function() {
+					var rUrl = '<a href="' + thisSite + '/Lists/Requests/Item/displayifs.aspx?ID=' + $(this).attr("ows_ID") + '" />';
+					itemURLS[x] = rUrl;
+					alert(itemURLS[x]);
+					itemURLS[x] = itemURLS[x].replace('<a href="'|'" />',"");
+					alert(itemURLS[x]);
+					x++;
+				  });
+				}
+			});
+			
+
+		});
+			
+		function refreshData(){
+			//delRoadmapElements("InternalRoadmap");
+			//delRoadmapElements("PublicRoadmap");
+			for (x=0;x<itemURLS.length;x++) {
+				StartWorkflow(itemURLS[x],workflowIDs[1]);
+			}
+		}
+
+	</script>
+  </head>
+  <body>
+	 <div id="button"><button id="button" onclick="refreshData();" value="Refresh Data">Refresh Data</button></div>
+  </body>
+</html>

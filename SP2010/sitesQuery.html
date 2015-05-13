@@ -1,0 +1,65 @@
+<html>
+  <head>
+    <script type="text/javascript" src="http://site/SiteAssets/scripts/jquery-1.5.2.min.js"></script>
+	<script type="text/javascript" src="http://site/SiteAssets/scripts/jquery.SPServices-0.6.1.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			//$("#wait").show();
+			var otherUN;
+			var name = $().SPServices.SPGetCurrentUser({
+				fieldName: "Name",
+				debug: true
+			});
+			nameArray = name.split("\\");
+			if (nameArray[0] = "BYU") { otherUN = "EXCH" + "\\" + nameArray[1]}
+
+			var i;
+			var sitesArray = new Array();
+			$().SPServices({
+				operation: "GetAllSubWebCollection",
+				completefunc: function (xData, Status) {
+					//alert(xData.responseXML.xml);
+					i=0;
+					$(xData.responseXML).find("Web").each(function() {
+						var thisTitle = $(this).attr("Title");
+						var thisUrl = $(this).attr("Url");
+						sitesArray[i] = thisUrl;
+						i++;
+					});
+					for (i=0;i<sitesArray.length;i++) {
+						$().SPServices({
+							operation: "GetListItems",
+							webURL: sitesArray[i],
+							async: false,
+							listName: "Tasks",
+							CAMLViewFields: "<ViewFields><FieldRef Name='Title' /><FieldRef Name='AssignedTo' /><FieldRef Name='ID' /></ViewFields>",
+							completefunc: function (xData, Status) {
+								//alert(xData.responseXML.xml);
+								$(xData.responseXML).find("[nodeName=z:row]").each(function() {
+									var task = $(this).attr("ows_Title");
+									var who = $(this).attr("ows_AssignedTo");
+									var url = sitesArray[i] + "/Lists/Tasks/DispForm.aspx?ID=" + $(this).attr("ows_ID");
+									if (who.toLowerCase().indexOf(nameArray[1]) >= 0) {
+										$("#tasksUL").append("<li><a href=\"javascript:popupTask('" + url + "')\">" + task + "</a></li>");
+									}
+								});
+							}
+						});
+						var next = i+1;
+						//if (next = sitesArray.length) {$("#wait").hide();}
+					}
+				}
+			});
+		});
+    </script>
+ </head>
+  <body>
+  <script>
+	function popupTask(url){
+		window.open(url,"_blank","fullscreen=no,height=800,width=800,toolbar=no,resizable=yes,menubar=no,left=10,top=10",false);
+	}
+	</script>
+	<div id="wait"><h3><i>Loading your tasks...</i></h3></div>
+	<div id="ulDiv"><ul id="tasksUL"></ul></div>
+  </body>
+</html>

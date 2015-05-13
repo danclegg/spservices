@@ -1,0 +1,205 @@
+<script src="/SiteAssets/scripts/jquery-1.4.2.js" type="text/javascript"></script>
+<script src="/SiteAssets/scripts/jquery.SPServices-0.6.1.min.js" type="text/javascript"></script>
+<script src="/SiteAssets/scripts/date.js" type="text/javascript"></script>
+<script src="/SiteAssets/scripts/BrowserDetect.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script type="text/javascript">
+var sum=0;
+	var d;
+	function back(data) {
+		d=data;
+
+		var results = $(d);
+
+		var j=0;
+		time_data = { "times":[]};
+		people = { "person": []};
+		$(results).find('ResourceTime').each(function(j){
+			var netid=$(this).find('requestor_net_id').text();
+			var hours=$(this).find('hours').text();
+			var submitted=$(this).find('date').text();
+			$('#timestable').append('<tr class="time"><td class="netid">' + netid + '</td><td class="hours">' + hours + '</td><td>' + submitted + '</td></tr>');
+			
+			time_data.times[j] = {"netid": netid, "hours": hours, "submitted": submitted};
+			sum += Number(hours);
+			j++;
+		});		
+	}
+
+function getParameterByName( name )
+{
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+  if( results == null )
+    return "";
+  else
+    return decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+
+$(document).ready(function() {
+$('#wodata').html("");
+		var s=getParameterByName('selected');
+ 		$('#form').html('<form id="formHtml"><br />WO: <select id="WOSelect" />');
+$('#wodata').append('<h3>Hours log:</h3><br /><table id=\"timestable\"><th>netid</th><th>hours</th><th>submitted</th></table>');
+
+$('#timestable').find("tr:gt(0)").remove();
+
+ 		$().SPServices({
+ 			operation: "GetListItems",
+ 			webURL: "/",
+ 			async: false,
+ 			listName: "WODetail",
+ 			CAMLViewFields: "<ViewFields><FieldRef Name='Title' /></ViewFields>",
+ 			completefunc: function (xData, Status) {
+ 				$(xData.responseXML).find("[nodeName=z:row]").each(function() {
+ 					var WO = $(this).attr("ows_Title");
+ 					$('#WOSelect').append('<option value="'+WO+'">'+WO+'</option>');
+ 				});
+ 			}
+ 		});
+
+ 		var len = s.length;
+ 		if(len>0) {
+ 			$("select option[value='"+s+"']").attr("selected","selected");
+ 		}
+
+
+
+var v = $('#WOSelect').val();
+ 		var url = "http://someProxy/"+ v +"-1?callback=back";
+ 		scriptNode = document.createElement('script');
+ 		scriptNode.src = url;
+ 		scriptNode.type = 'text/javascript';
+ 		document.body.appendChild(scriptNode);
+ 		
+$('#WOSelect').change(function(){
+ 			var selval = $('#WOSelect').val();
+ 			document.location = "?selected="+selval;
+ 		});
+});
+</script>
+<script type="text/javascript">
+        // Load the Visualization API and the piechart package.
+  google.load('visualization', '1', {'packages':['corechart', 'table']});
+
+  // Set a callback to run when the Google Visualization API is loaded.
+  google.setOnLoadCallback(drawPieChartAndTable);
+  
+       function drawPieChartAndTable() {
+	       $('#table_div').html("");
+	       $('#table_div').append('<h3>Hours log:</h3><br />');
+	       var data = new google.visualization.DataTable();
+	       data.addColumn('string', 'Net ID');
+	       data.addColumn('number', 'Hours');
+	       data.addColumn('date', 'Work Date');
+	       var count = $('#timestable tr').length;
+	       data.addRows(count-1);
+	       
+       
+	       var i=0;
+	       $.each(time_data.times,function(){
+		       var net = String(this.netid);
+		       var h = String(this.hours);
+		       var submitted = String(this.submitted);
+		       var year = submitted.substr(0,4);
+		       var month = submitted.substr(5,2);
+		       var day = submitted.substr(8,2);
+		       data.setCell(i,0,net);
+		       data.setCell(i,1,Number(h));
+		       data.setCell(i,2,new Date(year,month,day));
+		       i++;
+	       });
+	   
+        
+			var table = new google.visualization.Table(document.getElementById('table_div'));
+
+        table.draw(data, {showRowNumber: false, allowHtml: true, alternatingRowStyle: true, page: 'enable', pageSize: 30, sort: 'enable', sortAscending: false, sortColumn: 2, startPage: 0, width: '300px'});
+        $('#wodata').hide();
+      
+	       var chart = new google.visualization.DataTable();
+	       chart.addColumn('string', 'Task');
+	       chart.addColumn('number', 'Hours per Day');
+	       chart.addRows(1000);
+	       var people = $('#timestable tr[class="time"]');
+	       var netids = new Array();
+           $.each(people,function(){
+           		var netid = $(this).children('.netid').text();
+           		if(jQuery.inArray(netid,netids)===-1){
+           		       netids.push(netid);
+           		}
+       		});
+       		
+       		    var hours = new Array();
+        var j=0;
+        $.each(netids,function(index,value){
+        	var h=0;
+        	var k;
+        	var c = $('#timestable tr').length;
+
+	        for (k=1;k<c;k++){
+	        	var net = $('#timestable tr:eq('+k+') td:eq(0)').text();
+	        	var v = Number($('#timestable tr:eq('+k+') td:eq(1)').text());
+	        	if(net==netids[index]){
+	        		h += v;
+	        	}
+	        }
+	        hours[j]=h;
+	        j++;
+        });
+        var i;
+        for (i=0;i<hours.length;i++){
+        	var net = netids[i];
+        	var h = hours[i];
+        	if (h<0){
+        	h=0;
+        	}
+        	/* alert(net+':'+h); */
+        	chart.setValue(i, 0, net);
+        	chart.setValue(i, 1, Number(h));
+        }
+
+        var charts = new google.visualization.PieChart(document.getElementById('chart_div'));
+        charts.draw(chart, {width: 675, height: 450, is3D: true, title: 'Hours logged on work order (by netid)'});
+        
+        //$('#totalsTable').html("");
+	      // $('#totalsTable').append('<h3>Hours total: '+sum+'</h3><br />');
+	       
+	       var tot = new google.visualization.DataTable();
+	       tot.addColumn('string', 'Net ID');
+	       tot.addColumn('number', 'Hours');
+	       var countTot = netids.length;
+	       tot.addRows(countTot);
+	       
+       
+	       var t;
+	       for (t=0;t<hours.length;t++){
+		       var netTot = netids[t];
+		       var hTot = hours[t];
+		       
+		       if (hTot<0){
+					hTot=0;
+			   }
+        	tot.setCell(t, 0, netTot);
+        	tot.setCell(t, 1, Number(hTot));		       
+	       }
+	   
+       
+			var tottab = new google.visualization.Table(document.getElementById('totalsTable'));
+
+        tottab.draw(tot, {showRowNumber: false, alternatingRowStyle: true, page: 'enable', pageSize: 30, sort: 'enable', sortAscending: false, sortColumn: 0, startPage: 0, width: '300px'});
+        $('totalsTable').append('<br /><table style="width:300px;"><strong><tr><td style="text-align: left;">Total:</td><td style="text-align: right;">'+sum+'<td></tr></table>');
+      }
+	
+</script>
+
+<div id="form"></div>
+<div>
+<div id="chart_div" class="left" style="width:700px; float:left;"></div>
+<div id="totalsTable" class="right" style="width:350px; float:right"></div>
+</div>
+<div id="table_div" class="left" style="width:100%; float:left;"></div>
+<div id="wodata"></div>

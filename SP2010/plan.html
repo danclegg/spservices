@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <script type="text/javascript" src="http://site/sites/subsite/SiteAssets/scripts/latestJquery.js"></script>
+	<script type="text/javascript" src="http://site/sites/subsite/SiteAssets/scripts/jquery.SPServices-0.5.6.min.js"></script>
+	<script type="text/javascript" src="http://site/sites/subsite/SiteAssets/scripts/jquery.url.js"></script>
+	<script src="http://site/sites/subsite/SiteAssets/scripts/date.js" type="text/javascript"></script>   
+	<script>
+var siteNameInURL = "";
+var tl;
+var eventSource = new Timeline.DefaultEventSource();
+var event_data;
+
+function findSiteName()
+{
+	var sUrl;
+	sUrl = jQuery.url.segment(3);
+	//alert(sUrl);
+	return sUrl;
+}
+
+function getListID(listName)
+{
+	var id = "";
+	$().SPServices({
+	operation: "GetList",
+	listName: listName,
+	async: false,
+	completefunc: function (xData, Status) {
+		id = $(xData.responseXML).find("List").attr("ID");
+	}
+	});
+	return id;
+}
+
+    </script>
+
+  <script type="text/javascript">
+  _spBodyOnLoadFunctionNames.push("waitLoad");
+  </script>
+  </head>
+  <body onload="onLoad();" onresize="onResize();">
+		<div id="plan"></div>
+  </body>
+</html>

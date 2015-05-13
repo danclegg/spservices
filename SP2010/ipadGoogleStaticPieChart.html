@@ -1,0 +1,169 @@
+<script src="/SiteAssets/scripts/jquery-1.4.2.js" type="text/javascript"></script>
+<script src="/SiteAssets/scripts/jquery.SPServices-0.6.1.min.js" type="text/javascript"></script>
+<script src="/SiteAssets/scripts/date.js" type="text/javascript"></script>
+<script src="/SiteAssets/scripts/BrowserDetect.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script type="text/javascript">
+var sum=0;
+	var d;
+	function back(data) {
+		d=data;
+
+		var results = $(d);
+
+		var j=0;
+		time_data = { "times":[]};
+		people = { "person": []};
+		$(results).find('ResourceTime').each(function(j){
+			var netid=$(this).find('requestor_net_id').text();
+			var hours=$(this).find('hours').text();
+			var submitted=$(this).find('date').text();
+			var group=$(this).find('group_desc').text();
+			$('#timestable').append('<tr class="time"><td class="netid">' + netid + '</td><td class="hours">' + hours + '</td><td>' + submitted + '</td><td class="group">'+ group +'</td></tr>');
+			
+			time_data.times[j] = {"netid": netid, "hours": hours, "submitted": submitted, "group": group};
+			sum += Number(hours);
+			j++;
+		});		
+	}
+
+function getParameterByName( name )
+{
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+  if( results == null )
+    return "";
+  else
+    return decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+function loadScope(scope){
+document.location = "?scope="+scope;
+}
+
+$(document).ready(function() {
+$('#wodata').html("");
+$('#Loading').show();
+	    var pathname = window.location.href;
+		var s=getParameterByName('selected');
+		var scope=getParameterByName('scope');
+		if ((scope=="")||(scope==null)) scope="individual";
+ 		$('#form').html('<form id="formHtml"><br />WO: <select id="WOSelect" />');
+ 		$('#form').append('Scope:<a href="#" onclick="loadScope("individual");" name="individual">Individual</a>|<a href="javascript:void(0)" onclick="loadScope("organization");" name="organization">Organization</a>|<a href="javascript:void(0)" onclick="loadScope("task");" name="task">Task</a>');
+ 		$('a[name="'+scope+'"]').removeAttribute('href');
+
+$('#wodata').append('<h3>Hours log:</h3><br /><table id=\"timestable\"><th>netid</th><th>hours</th><th>submitted</th></table>');
+
+$('#timestable').find("tr:gt(0)").remove();
+
+ 		$().SPServices({
+ 			operation: "GetListItems",
+ 			webURL: "/",
+ 			async: false,
+ 			listName: "WODetail",
+ 			CAMLViewFields: "<ViewFields><FieldRef Name='Title' /></ViewFields>",
+ 			completefunc: function (xData, Status) {
+ 				$(xData.responseXML).find("[nodeName=z:row]").each(function() {
+ 					var WO = $(this).attr("ows_Title");
+ 					$('#WOSelect').append('<option value="'+WO+'">'+WO+'</option>');
+ 				});
+ 			}
+ 		});
+
+ 		var len = s.length;
+ 		if(len>0) {
+ 			$("select option[value='"+s+"']").attr("selected","selected");
+ 		}
+
+
+
+var v = $('#WOSelect').val();
+ 		var url = "http://someProxy/"+ v +"-1?callback=back";
+ 		scriptNode = document.createElement('script');
+ 		scriptNode.src = url;
+ 		scriptNode.type = 'text/javascript';
+ 		document.body.appendChild(scriptNode);
+ 		
+$('#WOSelect').change(function(){
+ 			var selval = $('#WOSelect').val();
+ 			document.location = "?selected="+selval;
+ 		});
+
+       $('#Loading').hide();
+//       $('#wodata').hide();
+	       $('#table_div').html("");
+	       $('#table_div').append('<h3>Hours log:</h3><br />');
+
+	       var pieUrl = "http://chart.apis.google.com/chart?chs=300x225&cht=p3&chds=0,103.333&chtt=Hours+by+netid";
+
+	       
+	       var peopleInTable = $('#timestable tr[class="time"]');
+	       var netids = new Array();
+	       pieUrl += "&chdl="
+           $.each(peopleInTable,function(){
+           		var netid = $(this).children('.netid').text();
+           		if(jQuery.inArray(netid,netids)===-1){
+           		       netids.push(netid);
+           		       pieUrl += netid;
+           		       pieUrl += "|";
+           		}
+       		});
+       		
+        hours = [];
+        var j=0;
+        $.each(netids,function(index,value){
+        	var h=0;
+        	var k;
+        	var c = $('#timestable tr').length;
+
+	        for (k=1;k<c;k++){
+	        	var net = $('#timestable tr:eq('+k+') td:eq(0)').text();
+	        	var v = Number($('#timestable tr:eq('+k+') td:eq(1)').text());
+	        	if(net==netids[index]){
+	        		h += v;
+	        	}
+	        }
+	        pieUrl += String(h)+"|";
+	        hours[j]=h;
+	        //alert(hours[j]);
+	        j++;
+        });
+        var i;
+      	       var data = "";
+	       var legend = "";
+        for (i=0;i<hours.length;i++){
+        	var net = netids[i];
+        	var h = hours[i];
+        	if (h<0){
+        	h=0;
+        	}
+        	/* alert(net+':'+h); */
+        	data += net;
+        	//alert(net);
+	        legend += String(Number(h));
+	        //alert(h);
+	        
+	        }
+
+        
+
+                //alert(pieUrl);
+        $('#chart_div').append('<img src="'+pieUrl+'" width="300" height="225" alt="Hours by netid" />');
+});
+        	
+</script>
+
+<div id="form"></div>
+<div id="Loading"><h1>Loading...</h1></div>
+<div id="container" style="width: 1100px; height: 450px;">
+<div id="chart_div" class="left" style="width:700px;float:left; position:relative;"></div>
+<div id="innercontainer" style="float:right; width:350px; position:relative">
+<div id="totalsTable" class="right" style="width:350px; float:right; position:relative;"></div>
+<div id="HoursTotal" style="position: relative"></div>
+</div>
+</div>
+<div id="table_div" class="left"></div>
+<div id="wodata"></div>

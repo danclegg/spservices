@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <script type="text/javascript" src="http://site/SiteAssets/scripts/jquery-1.5.2.min.js"></script>
+	<script type="text/javascript" src="http://site/SiteAssets/scripts/jquery.SPServices-0.6.1.min.js"></script>
+	<script type="text/javascript" src="http://site/SiteAssets/scripts/jquery.url.js"></script>
+	<script type="text/javascript" src="http://site/SiteAssets/scripts/date.js"></script>   
+    <script>
+		function copySite() {
+			var from = $('#copySite').val();
+			
+			var url = '/services/_vti_bin/Sites.asmx';
+			var val = $("#copySite").val();
+			var text = $("#copySite option[value='"+val+"']").text();
+
+			var soapBody;
+			soapBody = '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">';
+			soapBody +='<soap:Body><CreateWeb xmlns="http://schemas.microsoft.com/sharepoint/soap/">';
+			soapBody +='<url>'+url+'</url>';
+			soapBody +='<title>'+text+'</title>';
+			soapBody +='<description> </description>';
+			soapBody +='<templateName>site%20Service%20Template</templateName><language>1033</language><locale>1033</locale><collationLocale>1033</collationLocale>';
+			soapBody +='<uniquePermissions>false</uniquePermissions>';
+			soapBody +='<anonymous>false</anonymous><presence>false</presence></CreateWeb></soap:Body></soap:Envelope>';
+
+			$.ajax({
+				url: url,
+				type: "POST",
+				dataType: "xml",
+				data: soapBody,
+				beforeSend: function( xhr ){
+					// Pass the target URL onto the proxy.
+					xhr.setRequestHeader("SOAPTarget",url);
+					// Pass the action onto the proxy.
+					xhr.setRequestHeader("SOAPAction","http://schemas.microsoft.com/sharepoint/soap/CreateWeb");
+				},
+				complete: function (xData, Status) {
+					alert(xData); 
+				});
+				success: alert("success"),
+				contentType: "text/xml; charset=\"utf-8\""
+			});
+		}
+		function load() {
+				$('#copySite').html('<option value="http://site/bus/services/byuhomepage">BYU Homepage</option><option value="http://site/bus/services/campusscheduling">Campus Scheduling System</option><option value="http://site/bus/services/erecruiting">Career Services - eRecruiting</option><option value="http://site/bus/services/digitalstreaming">Digital Streaming Services</option><option value="http://site/bus/services/diningmanagement">Dining Management System</option><option value="http://site/bus/services/freshmanacademy">Freshman Academy Admin</option><option value="http://site/bus/services/honorcode">Honor Code Admin System</option><option value="http://site/bus/services/informationaccess">Information Access</option><option value="http://site/bus/services/intlstudent">International Student Tracking</option><option value="http://site/bus/services/labms">Lab Management System</option><option value="http://site/bus/services/mailtrackingsystem">Mail Tracking System</option><option value="http://site/bus/services/mobile">Mobile Application Registry</option><option value="http://site/bus/services/portlets">MyBYU Portlets</option><option value="http://site/bus/services/oitconsulting">OIT Consulting Services</option><option value="http://site/bus/services/lockerrental">Online Locker Rental</option><option value="http://site/bus/services/oacl">Open Access Computer Labs</option><option value="http://site/bus/services/oakiosk">Open Access Kiosk</option><option value="http://site/bus/services/oaprinting">Open Access Printing</option><option value="http://site/bus/services/parkingappeals">Parking Appeals</option><option value="http://site/bus/services/parkingregistration">Parking Registration</option><option value="http://site/bus/services/soaregistry">SOA Registry</option><option value="http://site/bus/services/software">Software Distribution</option><option value="http://site/bus/services/studentliferms">Student Life RMS</option><option value="http://site/bus/services/studentvoting">Student Voting</option><option value="http://site/bus/services/trafficadmin">Traffic Admin</option><option value="http://site/bus/services/antivirus">Virus Protection</option><option value="http://site/bus/services/webcollaboration">Web Collaboration</option><option value="http://site/bus/services/wcm">Web Content Management</option>');
+		}
+  </script>
+  <script type="text/javascript">
+  	_spBodyOnLoadFunctionNames.push("load");
+  </script>
+  </head>
+  <body>
+  Copy site:<br />
+     <div><select id="copySite">
+     <option value="http://site/bus/services/byuhomepage">BYU Homepage</option><option value="http://site/bus/services/campusscheduling">Campus Scheduling System</option><option value="http://site/bus/services/erecruiting">Career Services - eRecruiting</option><option value="http://site/bus/services/digitalstreaming">Digital Streaming Services</option><option value="http://site/bus/services/diningmanagement">Dining Management System</option><option value="http://site/bus/services/freshmanacademy">Freshman Academy Admin</option><option value="http://site/bus/services/honorcode">Honor Code Admin System</option><option value="http://site/bus/services/informationaccess">Information Access</option><option value="http://site/bus/services/intlstudent">International Student Tracking</option><option value="http://site/bus/services/labms">Lab Management System</option><option value="http://site/bus/services/mailtrackingsystem">Mail Tracking System</option><option value="http://site/bus/services/mobile">Mobile Application Registry</option><option value="http://site/bus/services/portlets">MyBYU Portlets</option><option value="http://site/bus/services/oitconsulting">OIT Consulting Services</option><option value="http://site/bus/services/lockerrental">Online Locker Rental</option><option value="http://site/bus/services/oacl">Open Access Computer Labs</option><option value="http://site/bus/services/oakiosk">Open Access Kiosk</option><option value="http://site/bus/services/oaprinting">Open Access Printing</option><option value="http://site/bus/services/parkingappeals">Parking Appeals</option><option value="http://site/bus/services/parkingregistration">Parking Registration</option><option value="http://site/bus/services/soaregistry">SOA Registry</option><option value="http://site/bus/services/software">Software Distribution</option><option value="http://site/bus/services/studentliferms">Student Life RMS</option><option value="http://site/bus/services/studentvoting">Student Voting</option><option value="http://site/bus/services/trafficadmin">Traffic Admin</option><option value="http://site/bus/services/antivirus">Virus Protection</option><option value="http://site/bus/services/webcollaboration">Web Collaboration</option><option value="http://site/bus/services/wcm">Web Content Management</option>
+     </select>
+	 <button id="createSite" onclick="copySite()" value="createSite">Create Site</button></div>
+  </body>
+</html>

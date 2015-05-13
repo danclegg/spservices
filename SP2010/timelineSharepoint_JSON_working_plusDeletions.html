@@ -1,0 +1,237 @@
+<html>
+  <head>
+    <script type="text/javascript" src="scripts/jquery-1.4.2.js"></script>
+	<script type="text/javascript" src="scripts/jquery.SPServices-0.5.6.min.js"></script>
+	<script type="text/javascript">Timeline_urlPrefix = "http://static.simile.mit.edu/timeline/api-2.3.0/";</script>
+	<script src="http://static.simile.mit.edu/timeline/api-2.3.0/timeline-api.js?bundle=true" type="text/javascript"></script>
+	<script src="scripts/date.js" type="text/javascript"></script>
+    <script>
+var siteNameInURL = "newservice";
+var tl;
+var eventSource = new Timeline.DefaultEventSource();
+var event_data;
+
+function getListID(listName)
+{
+	var id = "";
+	$().SPServices({
+	operation: "GetList",
+	listName: listName,
+	async: false,
+	completefunc: function (xData, Status) {
+		id = $(xData.responseXML).find("List").attr("ID");
+	}
+	});
+	return id;
+}
+
+function getListItems(listName)
+{
+	var itms = new Array();
+	var i=0;
+	$().SPServices({
+    operation: "GetListItems",
+    async: false,
+    listName: listName,
+    CAMLViewFields: "<ViewFields><FieldRef Name='RequestID' /></ViewFields>",
+    completefunc: function (xData, Status) {
+      $(xData.responseXML).find("[nodeName=z:row]").each(function() {
+			i++;
+			var reqID = "," +$(this).attr("ows_RequestID");
+			itms[i]=reqID;
+		});
+    }
+  });
+  return itms;
+}
+
+function deleteRequest(listName,RequestID)
+{
+	$()..SPServices({
+	operation: "UpdateListItems",
+	listName: listName,
+	batchCmd: "Delete",
+	valuepairs: [["RequestID", RequestID]],
+	completefunc: function (xData, Status) {
+		var out = $().SPServices.SPDebugXMLHttpResult({
+			node: xData.responseXML,
+			outputId: divId
+		});
+	}
+});
+return true;
+}
+
+function reconcileRecords()
+{
+	var delete = "false";
+	var InternalRoadmap = new Array();
+	InternalRoadmap = getListItems("InternalRoadmap");
+	var Requests = new Array();
+	Requests = getListItems("Requests");
+	for (x in InternalRoadmap) {
+		for (y in Requests) {
+			if (Requests[y] == InternalRoadmap[x]) 
+				{ 
+					deleteRequest("InternalRoadmap",InternalRoadmap[x]);
+				}
+		}
+	}
+	
+}
+
+function openXMLfile(url)
+{
+	var xmlDoc;
+	if (document.implementation && document.implementation.createDocument)
+	{
+		try {
+				//netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
+				var xmlhttp = new window.XMLHttpRequest();
+				xmlhttp.open("GET",url,false);
+				xmlhttp.send(null);
+				xmlDoc = xmlhttp.responseXML.documentElement;
+			}
+		catch (e) {
+			alert("xmlhttp error: " + e);
+			//alert("Permission UniversalBrowserRead denied.");
+			}
+		return(xmlDoc);
+	}
+	else if (window.ActiveXObject)
+	{
+		xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+		xmlDoc.async="false";
+		xmlDoc.load(url);
+		return(xmlDoc);
+ 	}
+	else
+	{
+		alert('Your browser can\'t handle this script');
+		return;
+	}
+	
+}
+
+function takeEventOut(url)
+{
+	var rows;
+	xmlDoc = openXMLfile(url);
+	
+	if (document.implementation && document.implementation.createDocument)
+	{
+//		try {
+//				//netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
+//				alert("got here");
+//				var xmlhttp = new window.XMLHttpRequest();
+//				xmlhttp.open("GET",url,false);
+//				xmlhttp.send(null);
+//				xmlDoc = xmlhttp.responseXML;
+//			}
+//		catch (e) {
+//			alert("xmlhttp error: " + e);
+//			//alert("Permission UniversalBrowserRead denied.");
+//			}
+		rows = xmlDoc.getElementsByTagName("row");
+	}		
+	else if (window.ActiveXObject)
+	{
+		rows = xmlDoc.getElementsByTagName("z:row");
+	}
+	else
+	{
+		alert('Your browser can\'t handle this script');
+		return;
+	}
+	event_data = { "events":[]};
+	for (j=0;j<rows.length;j++)
+	{
+		// taking the event info from the xml
+		var dateEvent = Date.parseExact(rows.item(j).getAttribute('ows_Start_x0020_Date'), "yyyy-M-dd hh:mm:ss");
+		var endEvent = Date.parseExact(rows.item(j).getAttribute('ows_End_x0020_Date'), "yyyy-M-dd hh:mm:ss");
+		var description = rows.item(j).getAttribute('ows_Description');
+		var approved = rows.item(j).getAttribute('ows_Approved');
+		var approveDate = Date.parseExact(rows.item(j).getAttribute('ows_Approved_x0020_Date'), "yyyy-M-dd hh:mm:ss");
+		var url = rows.item(j).getAttribute('ows_UrlVal');
+		var title = rows.item(j).getAttribute('ows_LinkTitle');
+		var icon = "http://www.brandspankingnew.net/img/feed-icon-12x12.gif";
+		var type = rows.item(j).getAttribute('ows_ElementType');
+		// choosing color for the event
+		var color;
+		switch(type)
+		{
+			case "Project":
+				color = "orange";
+				break;
+			case "Maintenance":
+				color = "red";
+				break;
+			case "Enhancement":
+				color = "green";
+				break;
+			default:
+				color = "blue";
+		}
+		
+		event_data.events[j] = {"start": dateEvent, "end": endEvent, "instant": false, "title": title, "textColor": "#000000", "description": "Request Type: " + type + "\n" + url + "\n" + description, "color": color};
+	}
+}
+
+function onLoad()
+{
+	reconcileRecords();
+	var listID = getPublicListID("InternalRoadmap");
+	date = Date.today().setTimezone("GMT").set({millisecond: 00, second: 00, minute: 00, hour: 00});
+	setTimeout("null(0)",2500);
+	//alert("loading data");
+	takeEventOut("http://site/sites/subsite/" + siteNameInURL + "/_vti_bin/owssvr.dll?XMLDATA=1&List=" + listID + "&query=Title");
+	//alert("data should now be loaded: " + eventSource);
+	//create the timeline
+		var bandInfos = [
+		Timeline.createBandInfo({
+		eventSource: eventSource,
+		 date: date,
+         width:          "70%",  
+         intervalUnit:   Timeline.DateTime.MONTH,  
+         intervalPixels: 100 
+     }), 
+     Timeline.createBandInfo({
+		eventSource: eventSource,
+		 date: date,
+		 overview: true,
+         width:          "30%",  
+         intervalUnit:   Timeline.DateTime.YEAR,  
+         intervalPixels: 200 
+     }) 
+	];
+	 bandInfos[1].syncWith = 0;
+  	bandInfos[1].highlight = true;
+  	tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
+	setTimeout("eventSource.loadJSON(event_data, document.location.href)",2000);
+}
+
+var resizeTimerID = null;
+function onResize() {
+    if (resizeTimerID == null) {
+        resizeTimerID = window.setTimeout(function() {
+            resizeTimerID = null;
+            tl.layout();
+        }, 500);
+    }
+}
+
+function waitLoad() {
+	setTimeout("onLoad()", 2000);
+}
+
+    </script>
+  <script type="text/javascript">
+  //_spBodyOnLoadFunctionNames.push("onLoad");
+  _spBodyOnLoadFunctionNames.push("waitLoad");
+  </script>
+  </head>
+  <body onload="onLoad();" onresize="onResize();">
+     <div id="my-timeline" style="height: 500px; border: 1px solid #aaa"></div>
+	 <div id="button"><button id="button" onclick="onLoad();" value="Refresh Roadmap">Refresh Roadmap</button></div>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+<link type="text/css" href="/sites/subsite/SiteAssets/scripts/css/redmond/jquery-ui-1.8.6.custom.css" rel="Stylesheet" />	
+<style>
+	td .red {color: red;}
+	td {color: black;}
+	#sortable1, #sortable2 { list-style-type: none; margin: 0; padding: 0; float: left; margin-right: 10px; }
+	#sortable1 li, #sortable2 li { margin: 0 5px 5px 5px; padding: 5px; font-size: 1.2em; width: 120px; }
+</style>
+
+<script src="/sites/subsite/SiteAssets/scripts/latestJquery.js" type="text/javascript"></script>
+<script src="/sites/subsite/SiteAssets/scripts/spservices.js" type="text/javascript"></script>
+<script type="text/javascript" src="/sites/subsite/SiteAssets/scripts/js/jquery-ui-1.8.6.custom.min.js"></script>
+<script type="text/javascript">
+	$.noConflict();
+</script>
+<script>
+	$(function() {
+		$( "#sortable1, #sortable2" ).sortable({
+			connectWith: ".connectedSortable"
+		}).disableSelection();
+	});
+</script>
+<div class="demo">
+	<ul id="sortable1" class="connectedSortable">
+		<li class="ui-state-default">Item 1</li>
+		<li class="ui-state-default">Item 2</li>
+		<li class="ui-state-default">Item 3</li>
+		<li class="ui-state-default">Item 4</li>
+		<li class="ui-state-default">Item 5</li>
+	</ul>
+
+	<ul id="sortable2" class="connectedSortable">
+		<li class="ui-state-highlight">Item 1</li>
+		<li class="ui-state-highlight">Item 2</li>
+		<li class="ui-state-highlight">Item 3</li>
+		<li class="ui-state-highlight">Item 4</li>
+		<li class="ui-state-highlight">Item 5</li>
+	</ul>
+
+</div>

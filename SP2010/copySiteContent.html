@@ -1,0 +1,125 @@
+<html>
+  <head>
+    <script type="text/javascript" src="http://site/SiteAssets/scripts/jquery-1.5.2.min.js"></script>
+	<script type="text/javascript" src="http://site/SiteAssets/scripts/jquery.SPServices-0.6.1.min.js"></script>
+	<script type="text/javascript" src="http://site/SiteAssets/scripts/jquery.url.js"></script>
+	<script type="text/javascript" src="http://site/SiteAssets/scripts/date.js"></script>   
+    <script type="text/javascript">
+		
+			// Get all the subsites of the current site
+			function getSites() {
+				//alert('gettingSites');
+				$("#toSiteSelect").html("");
+				//alert('got here');
+				$().SPServices({
+					operation: "GetWebCollection",
+					completefunc: function (xData, Status) {
+						$(xData.responseXML).find("Web").each(function() {
+							var thisTitle = $(this).attr("Title");
+							var thisUrl = $(this).attr("Url");
+							$('#toSiteSelect').append('<option value="'+thisUrl+'">'+thisTitle+'</option>');
+						}); 
+					} 
+				});
+			}
+			
+			function getRequests(weburl){
+				var requests = new Array();
+				$().SPServices({    
+					operation: "GetListItems",
+					webURL: weburl,
+					async: false,
+					listName: "Requests",
+					CAMLViewFields: "<ViewFields><FieldRef Name='Title' /><FieldRef Name='Description' /><FieldRef Name='Status' /><FieldRef Name='StartDate' /><FieldRef Name='EndDate' /><FieldRef Name='Approved' /><FieldRef Name='Request_x0020_Type' /><FieldRef Name='Business_x0020_Value' /></ViewFields>",
+					completefunc: function (xData, Status) {
+						var i=0;
+						$(xData.responseXML).find("[nodeName='z:row']").each(function() {
+							var title=$(this).attr("ows_Title");
+							var desc=$(this).attr("ows_Description");
+							var status=$(this).attr("ows_Status");
+							var start=$(this).attr("ows_StartDate");
+							var end=$(this).attr("ows_EndDate");
+							var approved=$(this).attr("ows_Approved");
+							var type=$(this).attr("ows_Request_x0020_Type");
+							var bv=$(this).attr("ows_Business_x0020_Value");
+							requests[i]=new Array();
+							requests[i][0]=(title);
+							requests[i][1]=(desc);
+							requests[i][2]=(start);
+							requests[i][3]=(end);
+							requests[i][4]=(approved);
+							requests[i][5]=(type);
+							requests[i][6]=(status);
+							requests[i][7]=(bv);
+							i++;
+						});
+					}
+			  	});
+				return requests;
+			}			
+			
+			function copy() {
+				//alert('got to copy');
+				var from = $('#fromSiteSelect').val();
+				var to = $('#toSiteSelect').val();
+				//alert(from);
+				//alert(to);
+				
+				//var fromListID = getListID("Requests",from);
+				//var toListID = getListID("Requests",to);
+				var requests = getRequests(from);
+				//alert(requests);
+			  	
+				var len = requests.length;
+				//alert(len);
+				for (var i=0; i<len; i++) {
+					if (requests[i][2] === undefined)
+					{
+						$().SPServices({
+							operation: "UpdateListItems",
+							async: false,
+							batchCmd: "New",
+							webURL: to,
+							listName: "Requests",
+							valuepairs: [["Title", requests[i][0]],["Description", requests[i][1]],["Approved", requests[i][4]],["Request_x0020_Type", requests[i][5]],["Status", requests[i][6]],["Business_x0020_Value", requests[i][7]]],
+							completefunc: function(xData, Status) {
+							  //alert("completed");
+							}
+						});
+					}
+					else {
+						$().SPServices({
+							operation: "UpdateListItems",
+							async: false,
+							batchCmd: "New",
+							webURL: to,
+							listName: "Requests",
+							valuepairs: [["Title", requests[i][0]],["Description", requests[i][1]],["StartDate", requests[i][2]],["EndDate", requests[i][3]],["Approved", requests[i][4]],["Request_x0020_Type", requests[i][5]],["Status", requests[i][6]],["Business_x0020_Value", requests[i][7]]],
+							completefunc: function(xData, Status) {
+							  //alert("completed");
+							}
+						});
+					}
+				}
+			} 
+
+			function loadToSelect() {
+				//alert('starting');
+				getSites();
+				
+				$('#toSiteSelect').html('');
+				$('#fromSiteSelect').html('');
+			}
+    </script>
+  <script type="text/javascript">
+  	_spBodyOnLoadFunctionNames.push("loadToSelect");
+  </script>
+  </head>
+  <body onload="loadToSelect();">
+  Copy requests<br />
+     <div>From: <select id="fromSiteSelect"></select>
+     <br />To: <select id="toSiteSelect"></select><br />
+	 <button id="submitButton" onclick="copy()" value="Load">Load</button></div>
+	 <div id="progress"></div>
+  </body>
+</html>

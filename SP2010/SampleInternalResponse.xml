@@ -1,0 +1,234 @@
+   <z:row ows_Attachments='0' 
+   		ows_LinkTitle='Roll Software Distribution (Java) to production' 
+		ows_Start_x0020_Date='2010-11-15 00:00:00' 
+		ows_End_x0020_Date='2010-10-31 00:00:00' 
+		ows_url='http://site/services/software/Lists/Requests/Item/displayifs.aspx?ID=14, /services/software/Lists/Requests/Item/displayifs.aspx?ID=14' 
+		ows_Approved='0' 
+		ows_Description='&lt;div class=&quot;ExternalClassCD3BD36E4BC54CA5874423A3D5DA1C2A&quot;&gt;undefined&lt;/div&gt;' 
+		ows_ElementType='Maintenance' 
+		ows_UrlVal='&lt;a href=&quot;/services/software/Lists/Requests/Item/displayifs.aspx?ID=14&quot;&gt;Click Here To View Details&lt;/a&gt;' 
+		ows_ID='9' />
+   <z:row ows_Attachments='0' 
+   		ows_LinkTitle='eLMS Shutoff' 
+		ows_Start_x0020_Date='2010-11-15 00:00:00' 
+		ows_End_x0020_Date='2010-12-31 00:00:00' 
+		ows_url='http://site/services/software/Lists/Requests/Item/displayifs.aspx?ID=13, /services/software/Lists/Requests/Item/displayifs.aspx?ID=13' 
+		ows_Approved='0' 
+		ows_Description='&lt;div class=&quot;ExternalClassB9EEDBB2618C4092A7DB7C46EAB6B79B&quot;&gt;Shut off instance of eLMS Enterprise&lt;/div&gt;' 
+		ows_ElementType='Maintenance' 
+		ows_UrlVal='&lt;a href=&quot;/services/software/Lists/Requests/Item/displayifs.aspx?ID=13&quot;&gt;Click Here To View Details&lt;/a&gt;' 
+		ows_ID='10' />
+   <z:row ows_Attachments='0' 
+   		ows_LinkTitle='Software Distribution Replacement Project' 
+		ows_Start_x0020_Date='2010-07-01 00:00:00' 
+		ows_End_x0020_Date='2010-11-30 00:00:00' 
+		ows_url='http://site/services/software/Lists/Requests/Item/displayifs.aspx?ID=16, /services/software/Lists/Requests/Item/displayifs.aspx?ID=16' 
+		ows_Approved='1' 
+		ows_Description='&lt;div class=&quot;ExternalClassAB78E01EBB1A4D8F952E1CFF5D5293C5&quot;&gt;Implement the recommended replacement solution from the investigation effort -- a home-grown Java-based software distribution platform.&lt;/div&gt;' 
+		ows_ElementType='Project' 
+		ows_UrlVal='&lt;a href=&quot;/services/software/Lists/Requests/Item/displayifs.aspx?ID=16&quot;&gt;Click Here To View Details&lt;/a&gt;' 
+		ows_ID='11' />
+   <z:row ows_Attachments='0' 
+   		ows_LinkTitle='Enable Personal Credit Card purchases' 
+		ows_Start_x0020_Date='2011-04-01 00:00:00' 
+		ows_End_x0020_Date='2011-05-30 00:00:00' 
+		ows_url='http://site/services/software/Lists/Requests/Item/displayifs.aspx?ID=12, /services/software/Lists/Requests/Item/displayifs.aspx?ID=12' 
+		ows_Approved='0' 
+		ows_Description='&lt;div class=&quot;ExternalClass0F8C1BC81B1E4842B2B4E2FBBA27F44C&quot;&gt;Some vendors, such as Adobe, allow personal use and purchase of products, provided the license is structured as such.  I hope to figure out the ELA by this time, such that I can take advantage of this great opportunity for sales.&lt;/div&gt;' 
+		ows_ElementType='Enhancement' 
+		ows_UrlVal='&lt;a href=&quot;/services/software/Lists/Requests/Item/displayifs.aspx?ID=12&quot;&gt;Click Here To View Details&lt;/a&gt;' 
+		ows_ID='12' />
+   <z:row ows_Attachments='0' 
+   		ows_LinkTitle='CSR enablement' 
+		ows_Start_x0020_Date='2011-01-03 00:00:00' 
+		ows_End_x0020_Date='2011-02-25 00:00:00' 
+		ows_url='http://site/services/software/Lists/Requests/Item/displayifs.aspx?ID=10, /services/software/Lists/Requests/Item/displayifs.aspx?ID=10' 
+		ows_Approved='0' 
+		ows_Description='&lt;div class=&quot;ExternalClass90F0A99D92574C278BF0414B506B30AB&quot;&gt;Allow CSRs requested purchase/admin/reporting abilities, as dictated in the requirements and detailed design&lt;/div&gt;' 
+		ows_ElementType='Enhancement' 
+		ows_UrlVal='&lt;a href=&quot;/services/software/Lists/Requests/Item/displayifs.aspx?ID=10&quot;&gt;Click Here To View Details&lt;/a&gt;' 
+		ows_ID='13' />
+   <z:row ows_Attachments='0' 
+   		ows_LinkTitle='eLMS Replacement Investigation' 
+		ows_Start_x0020_Date='2010-04-01 00:00:00' 
+		ows_End_x0020_Date='2010-06-30 00:00:00' 
+		ows_url='http://site/services/software/Lists/Requests/Item/displayifs.aspx?ID=15, /services/software/Lists/Requests/Item/displayifs.aspx?ID=15' 
+		ows_Approved='1' 
+		ows_Description='&lt;div class=&quot;ExternalClassB2993F8E77FE4464AD6F1B5E1A1AA9EC&quot;&gt;eLMS Enterprise will not be supported by E-Academy post 12/1/2010.  We must investigate our options.&lt;/div&gt;' 
+		ows_ElementType='Project' 
+		ows_UrlVal='&lt;a href=&quot;/services/software/Lists/Requests/Item/displayifs.aspx?ID=15&quot;&gt;Click Here To View Details&lt;/a&gt;' 
+		ows_ID='14' />
+   <z:row ows_Attachments='0' 
+   		ows_LinkTitle='Enable credit card purchases (business)' 
+		ows_Start_x0020_Date='2011-05-01 00:00:00' 
+		ows_End_x0020_Date='2011-09-30 00:00:00' 
+		ows_url='http://site/services/software/Lists/Requests/Item/displayifs.aspx?ID=11, /services/software/Lists/Requests/Item/displayifs.aspx?ID=11' 
+		ows_Approved='0' 
+		ows_Description='&lt;div class=&quot;ExternalClass1930940337B84D6CB86D4DFC616940FF&quot;&gt;Enable the use of credit cards (P-Cards) for purchases on Software Distribution&lt;/div&gt;' 
+		ows_ElementType='Enhancement' 
+		ows_UrlVal='&lt;a href=&quot;/services/software/Lists/Requests/Item/displayifs.aspx?ID=11&quot;&gt;Click Here To View Details&lt;/a&gt;' 
+		ows_ID='15' />
+   <z:row ows_Attachments='0' 
+   		ows_LinkTitle='Include instructions on shopping cart page for properly entering the account code' 
+		ows_Start_x0020_Date='2012-01-01 00:00:00' 
+		ows_End_x0020_Date='2012-01-01 00:00:00' 
+		ows_url='http://site/services/software/Lists/Requests/Item/displayifs.aspx?ID=9, /services/software/Lists/Requests/Item/displayifs.aspx?ID=9' 
+		ows_Approved='0'
+		ows_Description='&lt;div class=&quot;ExternalClass6E762EF109D2443B9FCB3A4A15EE919B&quot;&gt;From ticket 367034:
+Terrence is trying to purchase microsoft visio and he&#39;s not able to validate his account code.  The code he&#39;s using is 15421018-6100-00000. He requested that the software distribution page include instructions for properly entering the account code.&lt;/div&gt;' 
+		ows_ElementType='Enhancement' 
+		ows_UrlVal='&lt;a href=&quot;/services/software/Lists/Requests/Item/displayifs.aspx?ID=9&quot;&gt;Click Here To View Details&lt;/a&gt;' 
+		ows_ID='16' 
+		ows_PublicRo1='5' />
+   <z:row ows_Attachments='0' 
+   		ows_LinkTitle='Change breadcrumb at top of site to be a link list to Homepage, it.byu.edu, etc.' 
+		ows_Start_x0020_Date='2012-01-01 00:00:00' 
+		ows_End_x0020_Date='2012-01-01 00:00:00' 
+		ows_url='http://site/services/software/Lists/Requests/Item/displayifs.aspx?ID=17, /services/software/Lists/Requests/Item/displayifs.aspx?ID=17' 
+		ows_Approved='0' 
+		ows_Description='&lt;div class=&quot;ExternalClassBF8C987C5D6242969895A6631994FB58&quot;&gt;From ticket 380921:
+
+No home button on Software Distribution. Software Distribution is most often accessed from it.byu.edu, especially by Service Desk agents. However, once on the Software Distribution page, there is no way to return to it.byu.edu. There is a link to route Y, but no link to the IT Page. We would appreciate it, if you could place a link from Software Distribution back to the IT Page.&lt;/div&gt;' 
+		ows_ElementType='Enhancement' 
+		ows_UrlVal='&lt;a href=&quot;/services/software/Lists/Requests/Item/displayifs.aspx?ID=17&quot;&gt;Click Here To View Details&lt;/a&gt;' 
+		ows_ID='17' 
+		ows_PublicRo1='5' />
+   <z:row ows_Attachments='0' 
+   		ows_LinkTitle='Software Distribution UI Enhancements' 
+		ows_Start_x0020_Date='2012-01-01 00:00:00' 
+		ows_End_x0020_Date='2012-01-01 00:00:00' 
+		ows_url='http://site/services/software/Lists/Requests/Item/displayifs.aspx?ID=18, /services/software/Lists/Requests/Item/displayifs.aspx?ID=18' 
+		ows_Approved='0' 
+		ows_Description='&lt;div class=&quot;ExternalClass44AC73B5993F469EAF3AE72C6EAECE01&quot;&gt;From Ticket 380349:
+
+Thursday, May 19, 2011 1:57:01 PM obryana
+(Private)Kim sent the following email:
+
+On April 5, 2011, there was a discussion on the CSR list about desired changes to the SW distribution site. Several suggestions were quickly implemented for a few products and I was left with the impression that additional product pages would continue to be improved.
+
+However, today I had occasion to visit the site to download MS Windows Server 2008. Here are the choices for that product, in the order they appear on the page:
+
+Microsoft Windows Server 2008 Data Center (32 bit) (Win)
+Microsoft Windows Server 2008 Data Center (64 bit) (Win)
+Microsoft Windows Server 2008 Enterprise (32 Bit)(Win) 
+Microsoft Windows Server 2008 Enterprise (64 bit) (Win) 
+Microsoft Windows Server 2008 R2 Data Center (64 bit) (Win) 
+
+All of these have exactly the same description. Of course I can always visit the MS website for a description of the differences among these products, but a sentence or two here would be welcome.
+
+But wait! There&#39;s more! No description at all is displayed for the following item:
+
+Microsoft Windows Server 2008 R2 Enterprise (64 bit) (Win) 
+Microsoft Windows Server 2008 R2 Standard (64 bit) (Win) 
+
+And finally,
+
+Microsoft Windows Server 2008 Standard (64 bit) (Win) 
+
+This is the only description of any version of Windows Server 2008 that actually addresses the specific product.
+
+Three suggestions (pleas) for improvement on this page:
+
+1. Toss out the description from the box and replace it with a brief description of the specific product. Or have a paragraph before the section on Server 2008 explaining -- briefly -- the differences between Data Center, Enterprise and Standard versions, and R2 version.
+
+2. Devise a clearer method of organizing the choices. The current method appears to be strictly alphabetical which I don&#39;t find helpful for these products. I was looking for 2008 Standard - 32 bit, which it appears we don&#39;t have, but that was difficult to determine until I copied and pasted the product names here. Here are a couple of alternative suggestions for ordering them.
+
+First
+MS Windows Server 2008 32-bit choices
+   Data Center
+   Enterprise
+MS Windows Server 2008 64-bit choices
+   Data Center
+   Enterprise
+   Standard
+MS Windows Server 2008 R8 64-bit choices
+   Data Center
+   Enterprise
+   Standard
+
+Second
+MS Windows Server 2008 Data Center Choices
+  32-bit
+  64-bit
+  R2 64-bit
+MS Windows Server 2008 Enterprise Choices
+  32-bit
+  64-bit
+  R2 64-bit
+MS Windows Server 2008 Standard Choices
+  64-bit
+  R2 64-bit
+
+3. Put in a drop-down menu or other navigating aid to sections on this page. There are just too many choices and the descriptions are too long (and not particularly helpful) to find products easily. For example,
+
+&amp;quot;	...
+&amp;quot;	MathWorks
+&amp;quot;	MediaNotes
+&amp;quot;	Microsoft
+o	Desktop Optimization Pack
+o	Exchange Server
+o	Expressions Studio
+o	Office
+o	Operations Manager
+o	Project
+o	SharePoint Server
+o	SQL Server
+o	System Center Data Protection Manager
+o	Visio
+o	Visual Studio
+o	Windows 7
+o	Windows Server
+o	Windows Vista
+o	Windows XP
+&amp;quot;	National Instruments
+&amp;quot;	Oracle Corporation
+&amp;quot;	...
+Thanks for considering these suggestions.
+
+Kim Sullivan
+Systems Administrator
+Department of Geological Sciences
+Brigham Young University
+S389 ESC
+801-422-5706
+kim_sullivan@byu.edu
+
+I forwarded this email to Wyatt Taylor with the following addendum:
+
+Wyatt,
+
+We received the following email and thought you would be the best person to notify regarding the issues addressed.
+
+-Anna 
+Office of Information Technology
+Brigham Young University
+Website: http://it.byu.edu
+Email: it@byu.edu 
+Fax: (801) 422-0363
+Phone: (801) 422-4000
+
+I am assigning this ticket to Wyatt Taylor.
+
+Monday, May 23, 2011 3:31:56 PM wct5
+(Public)This is related to site content, not functionality. Specifically, configuration of product descriptions.
+
+Monday, May 23, 2011 3:34:03 PM dbb45
+(Public)I cannot make changes to the web site interface.
+
+Wednesday, June 15, 2011 2:09:34 PM wct5
+(Public)Please log these as potential enhancements.&lt;/div&gt;' 
+		ows_ElementType='Enhancement' 
+		ows_UrlVal='&lt;a href=&quot;/services/software/Lists/Requests/Item/displayifs.aspx?ID=18&quot;&gt;Click Here To View Details&lt;/a&gt;' 
+		ows_ID='18' 
+		ows_PublicRo1='5' />
+   <z:row ows_Attachments='0' 
+   		ows_LinkTitle='Altiris software packaging' 
+		ows_Start_x0020_Date='2012-01-01 00:00:00' 
+		ows_End_x0020_Date='2012-01-01 00:00:00' 
+		ows_url='http://site/services/software/Lists/Requests/Item/displayifs.aspx?ID=19, /services/software/Lists/Requests/Item/displayifs.aspx?ID=19' 
+		ows_Approved='0' 
+		ows_Description='&lt;div class=&quot;ExternalClassC886B398420F41CB9E839AC16CF4CBD2&quot;&gt;Allow for CSRs who use Altiris to package software without an initial purchase of the title(s).  Usage (including payment for such) will be reported as the installs occur.&lt;/div&gt;' 
+		ows_ElementType='Enhancement' 
+		ows_UrlVal='&lt;a href=&quot;/services/software/Lists/Requests/Item/displayifs.aspx?ID=19&quot;&gt;Click Here To View Details&lt;/a&gt;' 
+		ows_ID='19' 
+		ows_PublicRo1='5' />

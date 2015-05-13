@@ -1,0 +1,44 @@
+<html>
+	<head>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+		<script type="text/javascript">
+			var url = 'https://soaregistry.byu.edu:443/services/OIT/OITBilling'; // Preferably write this out from server side
+
+			function callWS(WO)
+			{
+			var soapMessage = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdl="http://www.informatica.com/wsdl/"><soapenv:Header/><soapenv:Body>'
+			+ '<wsdl:OITBillingRequest><wsdl:OITBillingRequestElement>'
+            + '<Operation>GetResourceTimes</Operation>'
+            + '<SubmitOrderRequest>'
+            + '<GetResourceTimesRequest>'
+            + '<ApplicationServiceTicket>?</ApplicationServiceTicket>'
+            + '<wo_number>' + WO + '</wo_number>'
+            + '</GetResourceTimesRequest></wsdl:OITBillingRequestElement></wsdl:OITBillingRequest></soapenv:Body></soapenv:Envelope>';
+
+			$.ajax({
+			url: url,
+			type: "POST",
+			dataType: "xml",
+			data: soapMessage,
+			complete: WSResponse,
+			});
+			contentType: "text/xml; charset=\"utf-8\""
+
+			return false;
+			}
+
+			function WSResponse(xmlHttpRequest, status)
+			{
+			 alert($(xmlHttpRequest.responseXML));
+//			 .find('SaveProductResult')
+//				.each(function()
+//			 {
+//			   var name = $(this).find('Name').text();
+//			 }
+			}
+		</script>
+	</head>
+	<body>
+		<button type="button" onclick="callWS('%533%')">Call WS</button>
+	</body>
+</html>

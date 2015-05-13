@@ -1,0 +1,23 @@
+<html>
+	<head>
+		<script type="text/javascript">
+			function callWS() {
+				var url="https://soaregistry.byu.edu:443/services/OIT/OITBilling";
+				if (window.XMLHttpRequest)
+				{
+					xmlHttp=new XMLHttpRequest();
+				}
+				else
+				{
+					xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				xmlHttp.open("POST",url,false);
+				xmlHttp.send();
+				alert(xmlHttp.responseText);
+			}
+		</script>
+	</head>
+	<body>
+		<button onclick="callWS();" type="button">Call WS</button> 
+	</body>
+</html>

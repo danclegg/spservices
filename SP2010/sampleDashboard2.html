@@ -1,0 +1,174 @@
+<script src="/SiteAssets/scripts/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="/SiteAssets/scripts/jquery.SPServices-0.7.2.min.js" type="text/javascript"></script>
+<script src="/SiteAssets/scripts/date.js" type="text/javascript"></script>
+<script src="https://js-naturalsort.googlecode.com/svn/trunk/naturalSort.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+
+$(document).ready(function() {
+  effortData = {"effort":[]};
+
+  //var j=0;
+  $().SPServices({
+    operation: "GetListItems",
+    async: false,
+    listName: "site Development Activities",
+    CAMLViewFields: '<ViewFields><FieldRef Name="Title" /><FieldRef Name="Activity_x0020_Type" /><FieldRef Name="Priority" /><FieldRef Name="Business_x0020_Analyst" /><FieldRef Name="Start_x0020_Date" /><FieldRef Name="Completion_x0020_Date" /><FieldRef Name="Work_x0020_Order" /><FieldRef Name="Budget" /><FieldRef Name="Phase" /><FieldRef Name="Status_x0020_Report" /><FieldRef Name="Site" /><FieldRef Name="Last_x0020_Updated" /><FieldRef Name="WO_NUM" /><FieldRef Name="ID" /><FieldRef Name="Modified" /><FieldRef Name="Created" /><FieldRef Name="Author" /><FieldRef Name="Editor" /><FieldRef Name="_UIVersionString" /><FieldRef Name="Attachments" /></ViewFields>',
+    completefunc: function (xData, Status) {
+      var j=0;
+
+        function setBudget(d,obj){
+          obj.budget=parseInt(d);
+        }
+
+      $(xData.responseXML).SPFilterNode("z:row").each(function(j) {
+
+        if($(this).attr("ows_Work_x0020_Order") === undefined){
+          var wo="";
+        } else { 
+          var wo=$(this).attr("ows_Work_x0020_Order");
+        }
+        var title=$(this).attr("ows_Title");
+        //var atype= (($(this).attr("ows_Activity_x0020_Type") === undefined) ? "" : $(this).attr("ows_Activity_x0020_Type"));
+        var priority= (($(this).attr("ows_Priority") === undefined) ? 99 : parseInt($(this).attr("ows_Priority")));
+        var ba= (($(this).attr("ows_Business_x0020_Analyst") === undefined) ? "" : $(this).attr("ows_Business_x0020_Analyst"));
+        var start= (($(this).attr("ows_Start_x0020_Date") === undefined) ? "" : $(this).attr("ows_Start_x0020_Date"));
+        var endDate= (($(this).attr("ows_Completion_x0020_Date") === undefined) ? "" : $(this).attr("ows_Completion_x0020_Date"));
+        
+        var phase= (($(this).attr("ows_Phase") === undefined) ? "" : $(this).attr("ows_Phase"));
+        //var statusReport= (($(this).attr("ows_Status_x0020_Report") === undefined) ? "" : $(this).attr("ows_Status_x0020_Report"));
+        if($(this).attr("ows_Site") === undefined){
+          var site="";
+        } else {
+          var tmp=$(this).attr("ows_Site");
+          var url=tmp.slice(0,tmp.indexOf(","));
+          //var name=tmp.split(", ",2)
+          //var site = '<a href="'+url+'">'+name[1]+'</a>';
+          var site = url;
+        }
+        // var updated= (($(this).attr("ows_Modified") == undefined) ? "" : $(this).attr("ows_Modified"));
+        // effortData.effort[j] = {"priority":priority, "activityName": title, "activityType": atype, "businessAnalyst": ba, "startDate": "", "endDate": "", "site":site, "updated": updated, "budget":0, "workOrder": wo, "phase": phase, "statusReport": statusReport, "ctd": 0};
+        effortData.effort[j] = {"priority":priority, "site": site, "activityName": title, "businessAnalyst": ba, "startDate": "", "endDate": "", "budget":0, "workOrder": wo, "phase": phase, "ctd": 0, "pctB": 0, "pctS": 0};
+        if (start !== "" && start !== undefined){
+          effortData.effort[j].startDate = (start.substr(0,4) +" "+ start.substr(5,2) +" " + start.substr(8,2));
+        }
+        if (endDate !== "" && endDate !== undefined){
+          var endTmp = Date.parseExact(endDate.substr(5,2) +"/"+endDate.substr(8,2)+"/" +endDate.substr(0,4),"MM/dd/yyyy").toString("d-MMM-yy");
+          //effortData.effort[j].endDate = (endDate.substr(5,2) +"/"+endDate.substr(8,2)+"/" +endDate.substr(0,4));
+          effortData.effort[j].endDate = endTmp;
+          // var day = 1000*60*60*24;
+          // var s = new Date(start.substr(5,2) + "/" + start.substr(8,2) + "/" + start.substr(0,4));
+          // var n = new Date();
+          // var e = Date.parseExact(endDate.substr(5,2) +"/"+endDate.substr(8,2)+"/" +endDate.substr(0,4),"MM/dd/yyyy");
+          // effortData.effort[j].pctS = (( n.getTime() - s.getTime() ) / (day)) / (( e.getTime() - s.getTime() ) / (day) ) * 100;
+        }
+
+        if ($(this).attr("ows_Work_x0020_Order") !== undefined){
+          $.getJSON("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20xml%20where%20url%3D'UrlEncodedUrl'&format=json&callback=?", function (data){
+              var budget = data.query.results.ROWSET.ROW.BUDGET;
+              var ctd = data.query.results.ROWSET.ROW.CTD;
+              effortData.effort[j-1].budget = parseInt(budget);
+              effortData.effort[j-1].ctd = parseInt(ctd);
+              var compRes = data.query.results.ROWSET.ROW.DUE_DATE;
+              effortData.effort[j-1].endDate=compRes;
+              effortData.effort[j-1].pctB = (parseInt(ctd) / parseInt(budget)) * 100;
+              // var day = 1000*60*60*24;
+              // var s = Date(effortData.effort[j-1].startDate);
+              // var n = new Date();
+              // var e = Date(compRes);
+              // effortData.effort[j-1].pctS = (( n.getTime() - s.getTime() ) / (day)) / (( e.getTime() - s.getTime() ) / (day) ) * 100;
+          });
+        }
+        j++;
+      });
+    }
+  }); // end SPServices
+}); // end document.ready
+</script>
+
+<script type='text/javascript'>
+      google.load('visualization', '1', {packages:['table']});
+      google.setOnLoadCallback(drawTable);
+      function drawTable() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('number', 'Priority');
+        data.addColumn('string', 'Activity Name');
+        //data.addColumn('string', 'Activity Type');
+        data.addColumn('string', 'Business Analyst');
+        data.addColumn('string', 'Phase');
+        data.addColumn('date', 'Start Date');
+        data.addColumn('date', 'Completion Date');
+        data.addColumn('string', 'Work Order');
+        data.addColumn('number', 'Budget');
+        data.addColumn('number', 'Cost To Date');
+        data.addColumn('number', '% Budget');
+        data.addColumn('number', '% Schedule');
+        //data.addColumn('string', 'Status Report');
+        //data.addColumn('string', 'Site');
+        //data.addColumn('date', 'Last Updated');
+
+        $.each(effortData.effort,function(){
+          var pri = this.priority;
+          if (String(this.site) === "" || String(this.site) === null) {
+            var an = String(this.activityName);
+          } else {
+            var an = '<a href="'+ String(this.site) + '">' + String(this.activityName)+ '</a>';
+          }
+          //var at = String(this.activityType);
+          var wo = String(this.workOrder);
+          var ba = String(this.businessAnalyst);
+          var budget = this.budget;
+          var ctd = this.ctd;
+          var phase = String(this.phase);
+          var startDate = Date.parseExact(String(this.startDate),"yyyy MM dd");
+          var endDate = Date.parseExact(String(this.endDate),"d-MMM-yy");
+          var pctB = this.pctB;
+          var day = 1000*60*60*24;
+          var s = new Date(String(startDate));
+          var n = new Date();
+          var e = new Date(String(endDate));
+          if (this.endDate !== "" && this.endDate !== undefined) {
+            var pctS = (( n.getTime() - s.getTime() ) / (day)) / (( e.getTime() - s.getTime() ) / (day) ) * 100;
+          } else {
+            var pctS = 0;
+          }
+          //var pctS = this.pctS;
+          //var status = '<div class="statusReport">'+String(this.statusReport)+'</div>';
+          //var site = String(this.site);          
+          //var updt = Date.parseExact(String(this.updated),"yyyy-MM-dd hh:mm:ss");
+          //data.addRow([ pri, an, at, ba, phase, startDate, endDate, wo, budget, ctd, status, site, updt ]);
+          data.addRow([ pri, an, ba, phase, startDate, endDate, wo, budget, ctd, pctB, pctS ]);
+          var rowIndex = data.getNumberOfRows() - 1;
+          if (pctB > 100 || pctS > 100){
+            for (var i=0; i<11; i++){
+              data.setProperty(rowIndex,i,'style','background-color: #FF9999');
+            }
+            // data.setRowProperty(rowIndex,'style','background-color: #FF9999');
+          }
+         });
+        var currFormatter = new google.visualization.NumberFormat({
+          prefix: '$', negativeColor: 'red', negativeParens: true
+        });
+        currFormatter.format(data, 7);
+        currFormatter.format(data, 8);
+
+        var pctFormatter = new google.visualization.NumberFormat({
+          suffix: '%', fractionDigits: 2
+        });
+        pctFormatter.format(data,9);
+        pctFormatter.format(data,10);
+
+
+        // var updtFormatter = new google.visualization.DateFormat({pattern: "M/d/yyyy hh:mm aa"});
+        // updtFormatter.format(data,11);
+
+        var dFormatter = new google.visualization.DateFormat({ pattern: "M/d/yyyy" });
+        dFormatter.format(data,4);
+        dFormatter.format(data,5);
+
+        var table = new google.visualization.Table(document.getElementById('table_div'));
+        table.draw(data, {allowHtml: true, showRowNumber: false});
+
+      }
+    </script>
+<div id='table_div'></div>

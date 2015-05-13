@@ -1,0 +1,132 @@
+<html>
+  <head>
+    <script type="text/javascript" src="http://site/sites/subsite/SiteAssets/scripts/jquery-1.4.2.js"></script>
+	<script type="text/javascript" src="http://site/sites/subsite/SiteAssets/scripts/jquery.SPServices-0.5.6.min.js"></script>
+	<script type="text/javascript" src="http://site/sites/subsite/SiteAssets/scripts/jquery.url.js"></script>
+    <script>
+		var requests=new Array();
+		var internalRoadmapElems=new Array();
+		var pubRoadmapElems=new Array();
+
+		function getRequests()
+		{
+			var i=0;
+			$().SPServices({
+			operation: "GetListItems",
+			listName: "Requests",
+			async: false,
+			CAMLViewFields: "<ViewFields><FieldRef Name='ID' /></ViewFields>",
+			completefunc: function (xData, Status) {
+				$(xData.responseXML).find("[nodeName=z:row]").each(function(){
+					requests[i] = $(this).attr("ows_ID");
+					i++;
+				});
+			}
+			});
+		}
+
+		function getRoadmapElements(roadmap)
+		{
+			var roadmapElems=new Array();
+			var i=0;
+			$().SPServices({
+			operation: "GetListItems",
+			listName: roadmap,
+			async: false,
+			CAMLViewFields: "<ViewFields><FieldRef Name='RequestID' /><FieldRef Name='ID' /></ViewFields>",
+			completefunc: function (xData, Status) {
+				$(xData.responseXML).find("[nodeName=z:row]").each(function(){
+					roadmapElems[i]=new Array(2);
+					roadmapElems[i][0] = $(this).attr("ows_RequestID");
+					roadmapElems[i][1] = $(this).attr("ows_ID");
+					i++;
+				});
+			}
+			});
+			////DEBUGGING SECTION
+			//var sRoadElem="";
+			//for (x in roadmapElems){
+			//	sRoadElem=sRoadElem + " " + roadmapElems[x];
+			//}
+			//alert("roadmap:"+roadmap+" elements: " + sRoadElem);
+			////END DEBUGGINGSECTION
+			return roadmapElems;	
+		}
+
+		function getExcessFromRoadmap(roadmapArray,requestsArray)
+		{
+			var mismatch = new Array();
+			var m=0;
+			var i;
+			for (i=0;i<roadmapArray.length;i++) {
+				var match=false;
+				for (x in requestsArray)
+				{
+					if (requestsArray[x] != roadmapArray[i][0]) {
+						match=false;
+					}
+					else {
+						match=true;
+					}
+						
+				}
+				if (match == false) {
+					mismatch[m]=roadmapArray[i][1];
+					//alert("mismatched element in roadmap:" + roadmapArray[i][1] + "," +mismatch[m]);
+					m++;
+				}
+			}
+			////DEBUGGING SECTION
+			//var sMismatch="";
+			//for (x in mismatch){
+			//	sMismatch=sMismatch + " " + mismatch[x];
+			//}
+			//alert("roadmap:"+roadmap+" mismatches: " + sMismatch);
+			////END DEBUGGINGSECTION
+			return mismatch;
+		}
+
+		function delItem(roadmap,item)
+		{
+			$().SPServices({
+				operation: "UpdateListItems",
+				async: false,
+				listName: roadmap,
+				updates: "<Batch OnError='Continue' PreCalc='TRUE' ListVersion='0'>" +
+						"<Method ID='1' Cmd='Delete'>" +
+						"<Field Name='ID'>" + item + "</Field>" +
+						"</Method></Batch>",
+				completefunc: function(xData, Status) {
+				}
+				});
+		}
+
+		function deleteMismatchesInRoadmaps()
+		{
+			var i;
+			getRequests();
+			internalRoadmapElems = getRoadmapElements("InternalRoadmap");
+			pubRoadmapElems = getRoadmapElements("PublicRoadmap");
+			
+			var excessInPub = new Array();
+			var excessInInt = new Array();
+			excessInPub = getExcessFromRoadmap(pubRoadmapElems,requests);
+			excessInInt = getExcessFromRoadmap(internalRoadmapElems,requests);
+			for (i=0;i<excessInPub;i++)
+			{
+				
+				delItem("PublicRoadmap",excessInPub[i]);
+			}
+			for (i=0;i<excessInInt;i++)
+			{
+				delItem("InternalRoadmap",excessInInt[i]);
+			}
+			
+		}
+
+		</script>
+	</head>
+	  <body>
+		 <div id="button"><button id="button" onclick="deleteMismatchesInRoadmaps();" value="Refresh Roadmap Data">Refresh Roadmap Data</button></div>
+	  </body>
+	</html>

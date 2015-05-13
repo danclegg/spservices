@@ -1,0 +1,28 @@
+<html>
+<head>
+<script type="text/javascript">
+	function buildXML() {
+		var fso = new ActiveXObject("Scripting.FileSystemObject");
+		var s = fso.CreateTextFile("./eventdata.xml", true);
+		s.WriteLine('<data wiki-url="http://site/sites/subsite/newservice/SiteAssets" wiki-section="roadmap.aspx">'); 
+
+		for (j=0;j<4;j++) {
+				//var dateEvent = Date.parseExact(rows.item(j).getAttribute('ows_Start_x0020_Date'), "yyyy-M-dd hh:mm:ss").toString("MMM dd yyyy hh:mm:ss") + " GMT-0600";
+				//var endEvent = Date.parseExact(rows.item(j).getAttribute('ows_End_x0020_Date'), "yyyy-M-dd hh:mm:ss").toString("MMM dd yyyy hh:mm:ss") + " GMT-0600";
+				var dateEvent = "Tue Aug 3 2010 00:00:00 GMT-0600";
+				var endEvent = "Fri Nov 12 2010 00:00:00 GMT-0600";
+				//var title = rows.item(j).getAttribute('ows_LinkTitle');
+				var title = "Test Title";
+				var evt = '<event start="' + dateEvent + '" end="' + endEvent + '" isDuration="true" title="' + title + '" color="#0a0" image="http://www.accents-n-art.com/artwork/M00358ss.jpg" link="http://www.accents-n-art.com/artists/claude_monet/san-giorgio-maggiore-at-dusk.html">';
+				var evtEnd = '</event>';
+				s.WriteLine(evt + evtEnd);
+				}
+		s.WriteLine('</data>');
+		s.Close();
+	}
+</script>
+</head>
+<body>
+	<div><input type="button" value="buildXMLFile" onclick="buildXML();"></input></div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <script type="text/javascript" src="/SiteAssets/scripts/jquery.js"></script>
+		<script type="text/javascript" src="/SiteAssets/scripts/spservices.js"></script>
+		<script>
+			$(document).ready(function(){
+				
+	            var siteUrl = $().SPServices.SPGetCurrentSite();
+            
+                $().SPServices({
+                    operation: "GetWeb",
+                    completefunc: function (xData, Status) {
+                        $(xData.responseXML).find("Web").each(function() {
+                            var thisTitle = $(this).attr("Title");
+                            var titleHtml = '<center><h1>'+ thisTitle + '</h1></center>';
+                            $('div.title').html(titleHtml);
+                        });
+                    }
+                });
+
+            });
+
+        </script>
+    
+	</head>
+    <body>
+		<div class="title"></div>
+	</body>
+</html>
+​​​​

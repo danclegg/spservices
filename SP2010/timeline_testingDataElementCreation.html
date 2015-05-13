@@ -1,0 +1,147 @@
+<html>
+  <head>
+	<script type="text/javascript">Timeline_urlPrefix = "http://static.simile.mit.edu/timeline/api-2.3.0/";</script>
+	<script src="http://static.simile.mit.edu/timeline/api-2.3.0/timeline-api.js?bundle=true" type="text/javascript"></script>
+    <script  src="date.js" type="text/javascript"></script>
+	<script>
+var tl;
+var eventSource = new Timeline.DefaultEventSource();
+
+function openXMLfile(url)
+{
+	if (document.implementation && document.implementation.createDocument)
+	{
+		xmlDoc = document.implementation.createDocument("", "", null);
+		try {
+			netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
+			} catch (e) {
+			alert("Permission UniversalBrowserRead denied.");
+			}
+		xmlDoc.async=false;
+		xmlDoc.load(url);
+		return(xmlDoc);
+	}
+	else if (window.ActiveXObject)
+	{
+		xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+		xmlDoc.async="false";
+		xmlDoc.load(url);
+		return(xmlDoc);
+ 	}
+	else
+	{
+		alert('Your browser can\'t handle this script');
+		return;
+	}
+	
+}
+
+function takeEventOut()
+{
+	for (j=0;j<5;j++)
+	{
+		// taking the event info from the xml
+		var dateEvent = Date.today();
+		// adding 2 week so it will look good
+		var endEvent = new Date(dateEvent);
+		endEvent.addWeeks(2);
+		var title = "title";
+		var status = "In Progress";
+		var priority = "Normal";
+		var icon;
+		switch (priority)
+		{
+			case "Low":
+				icon = "http://www.brandspankingnew.net/img/feed-icon-12x12.gif";
+				break;
+			case "High":
+				icon = "http://www.brandspankingnew.net/img/feed-icon-12x12.gif";
+				break;
+			case "Normal":
+				icon = "http://www.brandspankingnew.net/img/feed-icon-12x12.gif";
+				break;
+			default:
+				icon = "http://www.brandspankingnew.net/img/feed-icon-12x12.gif";
+				break;
+		}
+		// chossing color for the event
+		var color;
+		switch (status)
+		{
+			case "In Progress":
+				color = "green";
+				break
+			case "Not Started":
+				color = "red";
+				break
+			default:
+				color = "blue";
+				break
+		}
+		/*id, start, end, 
+		latestStart, earliestEnd, instant,  
+		text, description, image, link,  icon, color, textColor */
+		var evt = new Timeline.DefaultEventSource.Event( 
+         		dateEvent , //start
+         		endEvent, //end
+         		dateEvent,
+         		endEvent,
+         		true, //instant
+         		title, //text
+				status +" <b>" + priority + "</b>", 
+				icon,0 ,icon ,color  //description
+      			);
+		// adding it to the source
+		 eventSource.add(evt);
+
+	}	
+
+	
+}
+
+function onLoad()
+{
+        /* this will cause an error, cause it need to be in one line */
+	takeEventOut();
+	//create the timeline
+  	var bandInfos = [
+    	Timeline.createBandInfo({
+        	trackGap:       0.2,
+        	width:          "70%",
+		date:		"7 Jul 2010",
+        	intervalUnit:   Timeline.DateTime.DAY, 
+        	intervalPixels: 50,
+        	eventSource: eventSource
+    		}),
+    	Timeline.createBandInfo({
+        	showEventText:  false,
+        	trackHeight:    0.5,
+        	trackGap:       0.2,
+        	width:          "30%",
+		date:		"7 Jul 2010",			
+        	intervalUnit:   Timeline.DateTime.MONTH, 
+        	intervalPixels: 150,
+        	eventSource: eventSource
+    		})
+  	];
+  	bandInfos[1].syncWith = 0;
+  	bandInfos[1].highlight = true;
+  	tl = Timeline.create(document.getElementById("my-timeline"), bandInfos); 
+}
+
+var resizeTimerID = null;
+function onResize() {
+    if (resizeTimerID == null) {
+        resizeTimerID = window.setTimeout(function() {
+            resizeTimerID = null;
+            tl.layout();
+        }, 500);
+    }
+}
+
+    </script>
+  </head>
+  <body onload="onLoad();" onresize="onResize();">
+     <div id="my-timeline" style="height: 500px; border: 1px solid #aaa"></div>
+  </body>
+</html>

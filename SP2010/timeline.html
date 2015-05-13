@@ -1,0 +1,125 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+<script type="text/javascript">Timeline_urlPrefix = "http://static.simile.mit.edu/timeline/api-2.3.0/";</script>
+<script src="http://static.simile.mit.edu/timeline/api-2.3.0/timeline-api.js?bundle=true" type="text/javascript"></script>
+<script>
+var tl;
+var eventSource = new Timeline.DefaultEventSource();
+
+function openXMLfile(url) {
+	if (document.implementation && document.implementation.createDocument)
+	{
+		xmlDoc = document.implementation.createDocument("", "", null);
+		try {
+			netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
+			} catch (e) {
+			alert("Permission UniversalBrowserRead denied.");
+			}
+		xmlDoc.async=false;
+		xmlDoc.load(url);
+		return(xmlDoc);
+	}
+	else if (window.ActiveXObject)
+	{
+		xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+		xmlDoc.async="false";
+		xmlDoc.load(url);
+		return(xmlDoc);
+ 	}
+	else
+	{
+		alert('Your browser can\'t handle this script');
+		return;
+	}
+	
+}
+
+	function buildXML(url) {
+		    var rows;
+			xmlDoc = openXMLfile(url);
+			
+			if (document.implementation && document.implementation.createDocument)
+			{
+					try {
+							netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
+							} catch (e) {
+							alert("Permission UniversalBrowserRead denied.");
+							}
+					var rows = xmlDoc.getElementsByTagName("row");
+			}
+			else if (window.ActiveXObject)
+			{
+					rows = xmlDoc.getElementsByTagName("z:row");
+			}
+			else
+			{
+					alert('Your browser can\'t handle this script');
+					return;
+			}
+
+			var fso = new ActiveXObject("Scripting.FileSystemObject");
+			var s = fso.CreateTextFile("./eventdata.xml", true);
+			s.WriteLine('<data wiki-url="http://site/sites/subsite/newservice/SiteAssets" wiki-section="roadmap.aspx">'); 
+	
+			for (j=0;j<rows.length;j++) {
+					var dateEvent = Date.parseExact(rows.item(j).getAttribute('ows_Start_x0020_Date'), "yyyy-M-dd hh:mm:ss").toString("MMM dd yyyy hh:mm:ss") + " GMT-0600";
+					var endEvent = Date.parseExact(rows.item(j).getAttribute('ows_End_x0020_Date'), "yyyy-M-dd hh:mm:ss").toString("MMM dd yyyy hh:mm:ss") + " GMT-0600";
+					var title = rows.item(j).getAttribute('ows_LinkTitle');
+					var evt = '<event start="' + dateEvent1883 + '" end="' + endEvent + '" isDuration="true" title="' + title + '" color="#0a0" image="http://www.accents-n-art.com/artwork/M00358ss.jpg" link="http://www.accents-n-art.com/artists/claude_monet/san-giorgio-maggiore-at-dusk.html">';
+					var evtEnd = '</event>';
+					s.WriteLine(evt + evtEnd);
+					}
+			s.WriteLine('</data>');
+			s.Close();
+		}
+
+	 var tl; 
+	 function onLoad() {
+		buildXML("http://site/sites/subsite/newservice/_vti_bin/owssvr.dll?XMLDATA=1&List=2C5B2D0E-7E54-47CC-B535-C54164EE58A5&query=Title");
+		var eventSource = new Timeline.DefaultEventSource();
+		var bandInfos = [
+		Timeline.createBandInfo({
+		eventSource: eventSource,
+		date: "Aug 06 2010 00:00:00 GMT",
+         width:          "70%",  
+         intervalUnit:   Timeline.DateTime.MONTH,  
+         intervalPixels: 100 
+     }), 
+     Timeline.createBandInfo({
+		eventSource: eventSource,
+		date: "Aug 06 2010 00:00:00 GMT",
+		 overview: true,
+         width:          "30%",  
+         intervalUnit:   Timeline.DateTime.YEAR,  
+         intervalPixels: 200 
+     }) 
+   ]; 
+   
+   bandInfos[1].syncWith = 0; 
+   bandInfos[1].highlight = true; 
+   
+   tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
+	  Timeline.loadXML("./eventdata.xml", function(xml, url) { eventSource.loadXML(xml, url); });
+
+ } 
+ 
+ var resizeTimerID = null; 
+ function onResize() { 
+     if (resizeTimerID == null) { 
+         resizeTimerID = window.setTimeout(function() { 
+             resizeTimerID = null; 
+             tl.layout(); 
+         }, 500); 
+     } 
+ }
+</script> 
+</head>
+<body onload="onLoad();" onresize="onResize();">
+<div id="my-timeline" style="height: 150px; border: 1px solid #aaa"></div> 
+<div><button type="button" value="Refresh Roadmap" onclick="onLoad();" /></div>
+<noscript> 
+This page uses Javascript to show you a Timeline. Please enable Javascript in your browser to see the full page. Thank you. 
+</noscript>
+</body>
+</html>

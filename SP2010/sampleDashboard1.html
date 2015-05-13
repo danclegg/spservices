@@ -1,0 +1,108 @@
+<script src="/SiteAssets/scripts/jquery-1.8.3.min.js" type="text/javascript"></script>
+<script src="/SiteAssets/scripts/jquery.SPServices-0.7.2.min.js" type="text/javascript"></script>
+<script src="/SiteAssets/scripts/date.js" type="text/javascript"></script>
+<script src="https://js-naturalsort.googlecode.com/svn/trunk/naturalSort.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+
+$(document).ready(function() {
+  effortData = {"effort":[]};
+
+  //var j=0;
+  $().SPServices({
+    operation: "GetListItems",
+    async: false,
+    listName: "site Development Activities",
+    CAMLViewFields: '<ViewFields><FieldRef Name="Title" /><FieldRef Name="Activity_x0020_Type" /><FieldRef Name="Priority" /><FieldRef Name="Business_x0020_Analyst" /><FieldRef Name="Start_x0020_Date" /><FieldRef Name="Completion_x0020_Date" /><FieldRef Name="Work_x0020_Order" /><FieldRef Name="Budget" /><FieldRef Name="Phase" /><FieldRef Name="Status_x0020_Report" /><FieldRef Name="Site" /><FieldRef Name="Last_x0020_Updated" /><FieldRef Name="WO_NUM" /><FieldRef Name="ID" /><FieldRef Name="Modified" /><FieldRef Name="Created" /><FieldRef Name="Author" /><FieldRef Name="Editor" /><FieldRef Name="_UIVersionString" /><FieldRef Name="Attachments" /></ViewFields>',
+    completefunc: function (xData, Status) {
+      var j=0;
+      console.log("j initialized to "+j);
+
+        function setBudget(d,obj){
+          console.log("In d function the value of j:"+j);
+          obj.budget=parseInt(d);
+        }
+
+      $(xData.responseXML).SPFilterNode("z:row").each(function(j) {
+        //console.log("current value of j:" + j);
+        if($(this).attr("ows_Work_x0020_Order") === undefined){
+          var wo="";
+        } else { 
+          var wo=$(this).attr("ows_Work_x0020_Order");
+        }
+        var title=$(this).attr("ows_Title");
+        var atype= (($(this).attr("ows_Activity_x0020_Type") === undefined) ? "" : $(this).attr("ows_Activity_x0020_Type"));
+        var priority= (($(this).attr("ows_Priority") === undefined) ? 99 : parseInt($(this).attr("ows_Priority")));
+        var ba= (($(this).attr("ows_Business_x0020_Analyst") === undefined) ? "" : $(this).attr("ows_Business_x0020_Analyst"));
+        var start= (($(this).attr("ows_Start_x0020_Date") === undefined) ? "" : $(this).attr("ows_Start_x0020_Date"));
+        var endDate= (($(this).attr("ows_Completion_x0020_Date") === undefined) ? "" : $(this).attr("ows_Completion_x0020_Date"));
+        var phase= (($(this).attr("ows_Phase") === undefined) ? "" : $(this).attr("ows_Phase"));
+        var statusReport= (($(this).attr("ows_Status_x0020_Report") === undefined) ? "" : $(this).attr("ows_Status_x0020_Report"));
+        var site= (($(this).attr("ows_Site") === undefined) ? "" : $(this).attr("ows_Site"));
+        var updated= (($(this).attr("ows_Modified") == undefined) ? "" : $(this).attr("ows_Modified"));
+        effortData.effort[j] = {"priority":priority, "activityName": title, "activityType": atype, "businessAnalyst": ba, "startDate": "", "endDate": "", "site":site, "updated": updated, "budget":0, "workOrder": wo, "phase": phase};
+        if (start !== "" && start !== undefined){
+          effortData.effort[j].startDate = new Date(start.substr(0,4), start.substr(5,2), start.substr(8,2));
+        }
+        if (endDate !== "" && endDate !== undefined){
+          effortData.effort[j].endDate = new Date(endDate.substr(0,4), endDate.substr(5,2), endDate.substr(8,2));
+        }
+
+        if ($(this).attr("ows_Work_x0020_Order") !== undefined){
+          $.getJSON("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20xml%20where%20url%3D'UrlEncodedUrl'&format=json&callback=?", function (data){
+              var budget = data.query.results.ROWSET.ROW.BUDGET;
+              effortData.effort[j-1].budget = parseInt(budget);
+          });
+        }
+
+        console.log("I should now be done with row " + j);
+        j++;
+      });
+    }
+  }); // end SPServices
+}); // end document.ready
+</script>
+
+<script type='text/javascript'>
+      google.load('visualization', '1', {packages:['table']});
+      google.setOnLoadCallback(drawTable);
+      function drawTable() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('number', 'Priority');
+        data.addColumn('string', 'Activity Name');
+        data.addColumn('string', 'Activity Type');
+        data.addColumn('string', 'Business Analyst');
+        data.addColumn('string', 'Phase');
+        data.addColumn('string', 'Start Date');
+        data.addColumn('string', 'Completion Date');
+        data.addColumn('string', 'Work Order');
+        data.addColumn('number', 'Budget');
+        data.addColumn('string', 'Status Report');
+        data.addColumn('string', 'Site');
+        data.addColumn('string', 'LastUdated');
+
+        $.each(effortData.effort,function(){
+          var pri = this.priority;
+          var an = String(this.activityName);
+          var at = String(this.activityType);
+          var wo = String(this.workOrder);
+          var ba = String(this.businessAnalyst);
+          var budget = this.budget;
+          var phase = String(this.phase);
+          var startDate = String(this.startDate);
+          var endDate = String(this.endDate);
+          var status = String(this.statusReport);
+          var site = String(this.site);          
+          var updt = String(this.updated);
+          data.addRow([ pri, an, at, ba, phase, startDate, endDate, wo, budget, status, site, updt ]);
+         });
+        var currFormatter = new google.visualization.NumberFormat({
+          prefix: '$', negativeColor: 'red', negativeParens: true
+        });
+        currFormatter.format(data, 8);
+
+        var table = new google.visualization.Table(document.getElementById('table_div'));
+        table.draw(data, {allowHtml: true, showRowNumber: false});
+      }
+    </script>
+<div id='table_div'></div>

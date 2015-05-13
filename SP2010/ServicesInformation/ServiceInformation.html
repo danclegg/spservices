@@ -1,0 +1,120 @@
+<html>
+  <head>
+    <script type="text/javascript" src="http://site/sites/subsite/SiteAssets/scripts/jquery-1.4.2.js"></script>
+	<script type="text/javascript" src="http://site/sites/subsite/SiteAssets/scripts/jquery.SPServices-0.5.6.min.js"></script>
+	<script type="text/javascript" src="http://site/sites/subsite/SiteAssets/scripts/jquery.url.js"></script>
+	<script>
+	
+	var siteNameInURL = "";
+
+	function findSiteName()
+	{
+		var sUrl;
+		sUrl = jQuery.url.segment(3);
+		//alert(sUrl);
+		return sUrl;
+	}
+
+	function openXMLfile(url)
+	{
+		var xmlDoc;
+		if (document.implementation && document.implementation.createDocument)
+		{
+			try {
+					//netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
+					var xmlhttp = new window.XMLHttpRequest();
+					xmlhttp.open("GET",url,false);
+					xmlhttp.send(null);
+					xmlDoc = xmlhttp.responseXML.documentElement;
+				}
+			catch (e) {
+				alert("xmlhttp error: " + e);
+				//alert("Permission UniversalBrowserRead denied.");
+				}
+			return(xmlDoc);
+		}
+		else if (window.ActiveXObject)
+		{
+			xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+			xmlDoc.async="false";
+			xmlDoc.load(url);
+			return(xmlDoc);
+		}
+		else
+		{
+			alert('Your browser can\'t handle this script');
+			return;
+		}
+		
+	}
+
+	function writeServiceInfo(url)
+	{
+		var rows;
+		xmlDoc = openXMLfile(url);
+		
+		if (document.implementation && document.implementation.createDocument)
+		{
+	//		try {
+	//				//netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
+	//				alert("got here");
+	//				var xmlhttp = new window.XMLHttpRequest();
+	//				xmlhttp.open("GET",url,false);
+	//				xmlhttp.send(null);
+	//				xmlDoc = xmlhttp.responseXML;
+	//			}
+	//		catch (e) {
+	//			alert("xmlhttp error: " + e);
+	//			//alert("Permission UniversalBrowserRead denied.");
+	//			}
+			rows = xmlDoc.getElementsByTagName("row");
+		}		
+		else if (window.ActiveXObject)
+		{
+			rows = xmlDoc.getElementsByTagName("z:row");
+		}
+		else
+		{
+			alert('Your browser can\'t handle this script');
+			return;
+		}
+		for (j=0;j<rows.length;j++)
+		{
+			var service = rows.item(j).getAttribute('ows_LinkTitle');
+			var serviceNoSpace = jQuery.trim(service);
+			//if (serviceNoSpace.toLowerCase() == siteNameInURL.toLowerCase()) 
+			//{
+				// taking the event info from the xml
+				var ba = rows.item(j).getAttribute('ows_Business_x0020_Analyst');
+				var leadeng = rows.item(j).getAttribute('ows_Lead_x0020_Engineer');
+				var maint = rows.item(j).getAttribute('ows_WOM');
+				var incident = rows.item(j).getAttribute('ows_WOI');
+				var enhance = rows.item(j).getAttribute('ows_WOE');
+				window.print("<table> \
+				<td><tr><b>Service</b></tr><tr>" + service + "</tr></td> \
+				<td><tr><b>Business Analyst</b></tr><tr>" + ba + "</tr></td> \
+				<td><tr><b>Lead Engineer</b></tr><tr>" + leadeng + "</tr></td> \
+				<td><tr><b>Work Order (Maint)</b></tr><tr>" + maint + "</tr></td></table>"); 
+			//}
+		}
+	}
+	
+	function onLoad()
+	{
+		siteNameInURL = findSiteName();
+		setTimeout("null(0)",2500);
+		writeServiceInfo("http://site/sites/subsite/services/_vti_bin/owssvr.dll?XMLDATA=1&List=6C9BA02A-04BB-40E8-9233-8985B1465285&query=Title");
+	}
+	
+	function waitLoad() {
+		setTimeout("onLoad()", 2000);
+	}
+
+	</script>
+	<script type="text\javascript">
+		_spBodyOnLoadFunctionNames.push("waitLoad");
+	</script>
+	</head>
+  <body onload="waitLoad();">
+  </body>
+</html>

@@ -1,0 +1,50 @@
+<style>
+	select {
+		width: 200px;
+		height: 20px;
+		vertical-align: middle;
+	}
+</style>
+<script src="/sites/subsite/SiteAssets/scripts/latestJquery.js" type="text/javascript">
+</script><script src="/sites/subsite/SiteAssets/scripts/spservices.js" type="text/javascript">
+</script><script src="/sites/subsite/SiteAssets/scripts/date.js" type="text/javascript"></script>
+<script>
+	function addTask() {
+		var site = $("#siteSelect").val();
+		var url = site + "/Lists/Tasks/NewForm.aspx";		
+		window.open(url,"_blank","fullscreen=no,height=800,width=800,toolbar=no,resizable=yes,menubar=no,left=10,top=10",false);
+		
+		return true;
+	}
+	
+	$(document).ready(function(){
+		$("#form").html("<form id=\"formHtml\"><br />Site: <select id=\"siteSelect\" />  <input type=\"submit\" value=\"Add Task\" onclick=\"addTask();\" />");
+		$().SPServices({
+			operation: "GetWebCollection",
+			webURL: "http://site/sites/subsite/projects",
+			completefunc: function (xData, Status) {
+				$("#siteSelect").append("<option value=\"#\">----- Projects -----</option>");
+				$(xData.responseXML).find("Web").each(function() {
+					var thisTitle = $(this).attr("Title");
+					var thisUrl = $(this).attr("Url");
+					$("#siteSelect").append("<option value=\"" + thisUrl +"\">" + thisTitle + "</option>");
+				});
+			}
+		});
+		$().SPServices({
+			operation: "GetWebCollection",
+			webURL: "http://site/sites/subsite/services",
+			completefunc: function (xData, Status) {
+				$("#siteSelect").append("<option value=\"#\">----- Services -----</option>");
+				$(xData.responseXML).find("Web").each(function() {
+					var thisTitle = $(this).attr("Title");
+					var thisUrl = $(this).attr("Url");
+					if(thisTitle != "newservice") {
+						$("#siteSelect").append("<option value=\"" + thisUrl +"\">" + thisTitle + "</option>");
+					}
+				});
+			}
+		});
+	});
+</script>
+<div id="form"></div>
